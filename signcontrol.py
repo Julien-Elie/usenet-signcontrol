@@ -4,19 +4,31 @@
 # Script to help in managing Usenet hierarchies.  It generates control
 # articles and handles PGP keys (generation and management).
 #
-# signcontrol.py -- v. 1.1.0 -- 2007/05/09
+# signcontrol.py -- v. 1.2.0 -- 2008/11/17.
 # Written and maintained by Julien ÉLIE.
+# The source code is free to use, distribute, modify and study.
+#
 # Feel free to use it.  I would be glad to know whether you find it useful
 # for your hierarchy.
-# Contact: http://www.trigofacile.com/maths/contact/index.htm
+# Contact:  <http://www.trigofacile.com/maths/contact/index.htm>.
 #
-# Last version: http://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm
-# Please also read: http://www.eyrie.org/~eagle/faqs/usenet-hier.html
+# Last version:  <http://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm>.
+# Please also read:  <http://www.eyrie.org/~eagle/faqs/usenet-hier.html>.
+#
+# History:
+#
+# v. 1.2.0:  2008/11/17 -- support for USEPRO:  checkgroups scope, checkgroups
+#            serial numbers and accurate Content-Type: headers.
+#
+# v. 1.1.0:  2007/05/09 -- fix the newgroups line when creating a newsgroup,
+#            use a separate config file, possibility to import signcontrol from
+#            other scripts and use its functions.
+#
+# v. 1.0.0:  2007/05/01 -- initial release.
 
 
 # THERE IS NOTHING USEFUL TO PARAMETER IN THIS FILE.
-# The file "signcontrol_conf" contains all your parameters
-# and it will be parsed.
+# The file "signcontrol_conf" contains all your parameters and will be parsed.
 CONFIGURATION_FILE = 'signcontrol.conf'
 
 import os
@@ -47,22 +59,28 @@ def print_error(error):
 
 
 def pretty_time(seconds):
-    """Return the Date header."""
+    """Return the Date: header."""
     # You might want to change the "+0000" to better fit your local time zone.
     # If you do so, please use the same pattern, like "-0300" or "+0100".
     return time.strftime('%a, %d %b %Y %H:%M:%S +0000', time.gmtime(seconds))
 
 
+def serial_time(seconds):
+    """Return a checkgroups serial number."""
+    # Note that there is only one serial per day.
+    return time.strftime('%Y%m%d', time.gmtime(seconds))
+
+
 def read_configuration(file):
     """Parse the configuration file."""
-    TOKENS = ['PROGRAM_GPG', 'ID', 'MAIL', 'HOST', 'ADMIN_GROUP', 'NAME', 'URL',
+    TOKENS = ['PROGRAM_GPG', 'ID', 'MAIL', 'HOST', 'ADMIN_GROUP', 'NAME',
+              'CHECKGROUPS_SCOPE', 'URL',
               'NEWGROUP_MESSAGE_MODERATED', 'NEWGROUP_MESSAGE_UNMODERATED',
               'RMGROUP_MESSAGE', 'PRIVATE_HIERARCHY', 'CHECKGROUPS_FILE',
               'ENCODING']
     
     if not os.path.isfile(file):
-        print 'The configuration file is absent'
-        print 'the path to the gpg binary.'
+        print 'The configuration file is absent.'
         raw_input('Please install it before using this script.')
         sys.exit(2)
     
@@ -185,7 +203,7 @@ def manage_menu():
             print_error('Please enter a number between 1 and 8.')
 
 
-def sign_message(config, file_message, group, message_id, checkgroups=False, passphrase=None):
+def sign_message(config, file_message, group, message_id, type, passphrase=None):
     """Sign a control article."""
     if passphrase:
         os.system(config['PROGRAM_GPG'] + ' --pgp2 -a -b -u "'+ config['ID'] + '" --passphrase "' + passphrase + '" -o ' + file_message + '.pgp ' + file_message + '.txt')
@@ -200,7 +218,7 @@ def sign_message(config, file_message, group, message_id, checkgroups=False, pas
             else:
                 result.write('Sender: ' + config['MAIL'] + '\n')
                 result.write('Approved: ' + config['MAIL'] + '\n')
-                if checkgroups and not config['PRIVATE_HIERARCHY']:
+                if type == 'checkgroups' and not config['PRIVATE_HIERARCHY']:
                     result.write('Newsgroups: ' + group + ',news.admin.hierarchies\n')
                     result.write('Followup-To: ' + group + '\n')
                 else:
@@ -209,7 +227,12 @@ def sign_message(config, file_message, group, message_id, checkgroups=False, pas
                 result.write('X-Info: ' + config['URL'] + '\n')
                 result.write('\tftp://ftp.isc.org/pub/pgpcontrol/README.html\n')
                 result.write('MIME-Version: 1.0\n')
-                result.write('Content-Type: text/plain; charset=' + config['ENCODING'] + '\n')
+                if type == 'newgroup':
+                    result.write('Content-Type: multipart/mixed; boundary="signcontrol"; charset=' + config['ENCODING'] + '\n')
+                elif type == 'checkgroups':
+                    result.write('Content-Type: application/news-checkgroups; charset=' + config['ENCODING'] + '\n')
+                else: # if type == 'rmgroup':
+                    result.write('Content-Type: text/plain; charset=' + config['ENCODING'] + '\n')
                 result.write('Content-Transfer-Encoding: 8bit\n')
                 for line2 in file(file_message + '.pgp', 'r'):
                     if line2.startswith('-'):
@@ -316,19 +339,25 @@ def generate_newgroup(groups, config, group=None, moderated=None, description=No
         result.write('Date: ' + pretty_time(SECONDS) + '\n')
         result.write('From: ' + config['NAME'] + ' <' + config['MAIL'] + '>\n')
         result.write('Sender: ' + config['MAIL'] + '\n\n')
+        result.write('This is a MIME NetNews control message.\n')
+        result.write('--signcontrol\n')
+        result.write('Content-Type: text/plain; charset=' + config['ENCODING'] + '\n\n')
         if moderated:
             result.write(config['NEWGROUP_MESSAGE_MODERATED'].replace('$GROUP$', group))
         else:
             result.write(config['NEWGROUP_MESSAGE_UNMODERATED'].replace('$GROUP$', group))
-        result.write('\n\nFor your newsgroups file:\n')
+        result.write('\n\n--signcontrol\n')
+        result.write('Content-Type: application/news-groupinfo; charset=' + config['ENCODING'] + '\n\n')
+        result.write('For your newsgroups file:\n')
         if len(group) < 8:
             result.write(group + '\t\t\t' + description + '\n')
         elif len(group) < 16:
             result.write(group + '\t\t' + description + '\n')
         else:
             result.write(group + '\t' + description + '\n')
+        result.write('\n--signcontrol--\n')
         result.close()
-        sign_message(config, file_newgroup, group, message_id, False, passphrase)
+        sign_message(config, file_newgroup, group, message_id, 'newgroup', passphrase)
     
     if raw_input('Do you want to update the current checkgroups file? (y/n) ') == 'y':
         groups[group] = description
@@ -360,7 +389,7 @@ def generate_rmgroup(groups, config, group=None, passphrase=None):
         result.write('Sender: ' + config['MAIL'] + '\n\n')
         result.write(config['RMGROUP_MESSAGE'].replace('$GROUP$', group) + '\n')
         result.close()
-        sign_message(config, file_rmgroup, group, message_id, False, passphrase)
+        sign_message(config, file_rmgroup, group, message_id, 'rmgroup', passphrase)
     
     if groups.has_key(group):
         if raw_input('Do you want to update the current checkgroups file? (y/n) ') == 'y':
@@ -368,13 +397,23 @@ def generate_rmgroup(groups, config, group=None, passphrase=None):
             write_checkgroups(groups, config['CHECKGROUPS_FILE'])
 
 
-def generate_checkgroups(config, passphrase=None):
+def generate_checkgroups(config, passphrase=None, serial=None):
     """List the groups of the hierarchy."""
+    while serial not in range(0,100):
+        try:
+            print 'If it is your first checkgroups for today, leave it blank (default is 0).'
+            print 'Otherwise, increment this revision by one.'
+            serial = int(raw_input('Revision to use (0-99): '))
+            print
+        except:
+            serial = 0
+
+    serial = '%02d' % serial
     file_checkgroups = 'checkgroups-' + str(SECONDS)
     result = file(file_checkgroups + '.txt', 'wb')
     result.write('X-Signed-Headers: Subject,Control,Message-ID,Date,From,Sender\n')
-    result.write('Subject: cmsg checkgroups\n')
-    result.write('Control: checkgroups\n')
+    result.write('Subject: cmsg checkgroups ' + config['CHECKGROUPS_SCOPE'] + ' #' + serial_time(SECONDS) + serial + '\n')
+    result.write('Control: checkgroups ' + config['CHECKGROUPS_SCOPE'] + ' #' + serial_time(SECONDS) + serial + '\n')
     message_id = '<checkgroups-' + str(SECONDS) + '@' + config['HOST'] + '>'
     result.write('Message-ID: ' + message_id + '\n')
     result.write('Date: ' + pretty_time(SECONDS) + '\n')
@@ -383,7 +422,7 @@ def generate_checkgroups(config, passphrase=None):
     for line in file(config['CHECKGROUPS_FILE'], 'r'):
         result.write(line.rstrip() + '\n')
     result.close()
-    sign_message(config, file_checkgroups, config['ADMIN_GROUP'], message_id, True, passphrase)
+    sign_message(config, file_checkgroups, config['ADMIN_GROUP'], message_id, 'checkgroups', passphrase)
 
 
 def manage_keys(config):
