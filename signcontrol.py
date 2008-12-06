@@ -4,7 +4,7 @@
 # Script to help in managing Usenet hierarchies.  It generates control
 # articles and handles PGP keys (generation and management).
 #
-# signcontrol.py -- v. 1.2.0 -- 2008/11/17.
+# signcontrol.py -- v. 1.2.1 -- 2008/12/07.
 # Written and maintained by Julien ÉLIE.
 # The source code is free to use, distribute, modify and study.
 #
@@ -16,6 +16,9 @@
 # Please also read:  <http://www.eyrie.org/~eagle/faqs/usenet-hier.html>.
 #
 # History:
+#
+# v. 1.2.1:  2008/12/07 -- ask for confirmation when "(Moderated)" is misplaced
+#            in a newsgroup description.
 #
 # v. 1.2.0:  2008/11/17 -- support for USEPRO:  checkgroups scope, checkgroups
 #            serial numbers and accurate Content-Type: headers.
@@ -298,8 +301,8 @@ def generate_newgroup(groups, config, group=None, moderated=None, description=No
         if raw_input('Is ' + group + ' a moderated newsgroup? (y/n) ' ) == 'y':
             moderated = True
             print
-            print 'There is no need to add " (Moderated)" at the end of the description.'
-            print 'It will be automatically added.'
+            print 'There is no need to add " (Moderated)" at the very end of the description.'
+            print 'It will be automatically added, if not already present.'
             print
         else:
             moderated = False
@@ -308,16 +311,37 @@ def generate_newgroup(groups, config, group=None, moderated=None, description=No
         print 'The description should start with a capital and end in a period.'
         description = raw_input("Description of " + group + ": ")
         if len(description) > 56:
-            description = None
-            print_error('The description is too long.  Please shorten it.')
+            print_error('The description is too long.  You should shorten it.')
+            if raw_input('Do you want to continue despite this recommendation? (y/n) ') != 'y':
+                description = None
+                continue
+
+        moderated_count = description.count('(Moderated)')
+        if moderated_count > 0:
+            if not moderated:
+                if description.endswith(' (Moderated)'):
+                    description = None
+                    print_error('The description must not end with " (Moderated)".')
+                    continue
+                else:
+                    print_error('The description must not contain "(Moderated)".')
+                    if raw_input('Do you want to continue despite this recommendation? (y/n) ') != 'y':
+                        description = None
+                        continue
+            elif moderated_count > 1 or not description.endswith(' (Moderated)'):
+                print_error('The description must not contain "(Moderated)".')
+                if raw_input('Do you want to continue despite this recommendation? (y/n) ') != 'y':
+                    description = None
+                    continue
     
     print
     print 'Here is the information about the newsgroup:'
     print 'Name: ' + group
-    description = description.replace(' (Moderated)', '')
+
     if moderated:
         print 'Status: moderated'
-        description += ' (Moderated)'
+        if not description.endswith(' (Moderated)'):
+            description += ' (Moderated)'
     else:
         print 'Status: unmoderated'
     print 'Description: ' + description
