@@ -4,7 +4,7 @@
 # Script to help in managing Usenet hierarchies.  It generates control
 # articles and handles PGP keys (generation and management).
 #
-# signcontrol.py -- v. 1.2.1 -- 2008/12/07.
+# signcontrol.py -- v. 1.3.0 -- 2009/07/28.
 # Written and maintained by Julien ÉLIE.
 # The source code is free to use, distribute, modify and study.
 #
@@ -16,6 +16,11 @@
 # Please also read:  <http://www.eyrie.org/~eagle/faqs/usenet-hier.html>.
 #
 # History:
+#
+# v. 1.3.0:  2009/07/28 -- remove the charset for a multipart/mixed block
+#            in newgroup articles, change the default serial number from 0 to 1
+#            in checkgroups articles, allow the user to interactively modify
+#            his message (thanks to Matija Nalis for the idea).
 #
 # v. 1.2.1:  2008/12/07 -- ask for confirmation when "(Moderated)" is misplaced
 #            in a newsgroup description.
@@ -31,7 +36,8 @@
 
 
 # THERE IS NOTHING USEFUL TO PARAMETER IN THIS FILE.
-# The file "signcontrol_conf" contains all your parameters and will be parsed.
+# The file "signcontrol.conf" contains all your parameters
+# and it will be parsed.
 CONFIGURATION_FILE = 'signcontrol.conf'
 
 import os
@@ -63,8 +69,9 @@ def print_error(error):
 
 def pretty_time(seconds):
     """Return the Date: header."""
-    # You might want to change the "+0000" to better fit your local time zone.
-    # If you do so, please use the same pattern, like "-0300" or "+0100".
+    # You might want to change the "+0000" (UTC) to fit your local time zone.
+    # If you do so, please use the same pattern, like "-0300" or "+0100" and
+    # change time.gmtime() to time.localtime().
     return time.strftime('%a, %d %b %Y %H:%M:%S +0000', time.gmtime(seconds))
 
 
@@ -134,7 +141,7 @@ def read_checkgroups(path):
             group, description = line2.split('\t')
             groups[group] = description
         except:
-            print_error('The current checkgroups is bad formed.')
+            print_error('The current checkgroups is badly formed.')
             print 'The offending line is:'
             print line
             print
@@ -164,6 +171,7 @@ def write_checkgroups(groups, path):
 def choice_menu():
     """Initial menu."""
     while True:
+        print
         print 'What do you want to do?'
         print '-----------------------'
         print '1. Generate a newgroup control article (create or change a newsgroup)'
@@ -185,6 +193,7 @@ def choice_menu():
 def manage_menu():
     """Second menu for the management of PGP keys."""
     while True:
+        print
         print 'What do you want to do?'
         print '-----------------------'
         print '1. See the current installed keys'
@@ -231,7 +240,7 @@ def sign_message(config, file_message, group, message_id, type, passphrase=None)
                 result.write('\tftp://ftp.isc.org/pub/pgpcontrol/README.html\n')
                 result.write('MIME-Version: 1.0\n')
                 if type == 'newgroup':
-                    result.write('Content-Type: multipart/mixed; boundary="signcontrol"; charset=' + config['ENCODING'] + '\n')
+                    result.write('Content-Type: multipart/mixed; boundary="signcontrol"\n')
                 elif type == 'checkgroups':
                     result.write('Content-Type: application/news-checkgroups; charset=' + config['ENCODING'] + '\n')
                 else: # if type == 'rmgroup':
@@ -247,6 +256,7 @@ def sign_message(config, file_message, group, message_id, type, passphrase=None)
                     elif len(line2) > 2:
                         result.write('\t' + line2.rstrip() + '\n')
     result.close()
+
     os.remove(file_message + '.pgp')
     os.remove(file_message + '.txt')
     print
@@ -263,7 +273,7 @@ def sign_message(config, file_message, group, message_id, type, passphrase=None)
     #    print 'The control article has just been sent!'
 
 
-def generate_newgroup(groups, config, group=None, moderated=None, description=None, passphrase=None):
+def generate_newgroup(groups, config, group=None, moderated=None, description=None, message=None, passphrase=None):
     """Create a new group."""
     while not group:
         group = raw_input('Name of the newsgroup to create: ').lower()
@@ -308,6 +318,7 @@ def generate_newgroup(groups, config, group=None, moderated=None, description=No
             moderated = False
     
     while not description:
+        print
         print 'The description should start with a capital and end in a period.'
         description = raw_input("Description of " + group + ": ")
         if len(description) > 56:
@@ -333,7 +344,32 @@ def generate_newgroup(groups, config, group=None, moderated=None, description=No
                 if raw_input('Do you want to continue despite this recommendation? (y/n) ') != 'y':
                     description = None
                     continue
-    
+
+    if not message:
+        print
+        print 'The current message which will be sent is:'
+        print
+
+        if moderated:
+            message = config['NEWGROUP_MESSAGE_MODERATED'].replace('$GROUP$', group)
+        else:
+            message = config['NEWGROUP_MESSAGE_UNMODERATED'].replace('$GROUP$', group)
+
+        print message
+        print
+        if raw_input('Do you want to change it? (y/n) ') == 'y':
+            print
+            print 'Please enter the message you want to send.'
+            print 'End it with a line containing only "." (a dot).'
+            print
+
+            message = ''
+            buffer = raw_input('Message: ') + '\n'
+            while buffer != '.\n':
+                message += buffer.rstrip() + '\n'
+                buffer = raw_input('Message: ') + '\n'
+            print
+
     print
     print 'Here is the information about the newsgroup:'
     print 'Name: ' + group
@@ -345,6 +381,9 @@ def generate_newgroup(groups, config, group=None, moderated=None, description=No
     else:
         print 'Status: unmoderated'
     print 'Description: ' + description
+    print 'Message: '
+    print
+    print message
     print
     
     if raw_input('Do you want to generate a control article for ' + group + '? (y/n) ') == 'y':
@@ -366,10 +405,7 @@ def generate_newgroup(groups, config, group=None, moderated=None, description=No
         result.write('This is a MIME NetNews control message.\n')
         result.write('--signcontrol\n')
         result.write('Content-Type: text/plain; charset=' + config['ENCODING'] + '\n\n')
-        if moderated:
-            result.write(config['NEWGROUP_MESSAGE_MODERATED'].replace('$GROUP$', group))
-        else:
-            result.write(config['NEWGROUP_MESSAGE_UNMODERATED'].replace('$GROUP$', group))
+        result.write(message + '\n')
         result.write('\n\n--signcontrol\n')
         result.write('Content-Type: application/news-groupinfo; charset=' + config['ENCODING'] + '\n\n')
         result.write('For your newsgroups file:\n')
@@ -388,19 +424,41 @@ def generate_newgroup(groups, config, group=None, moderated=None, description=No
         write_checkgroups(groups, config['CHECKGROUPS_FILE'])
 
 
-def generate_rmgroup(groups, config, group=None, passphrase=None):
+def generate_rmgroup(groups, config, group=None, message=None, passphrase=None):
     """Remove a group."""
     while not group:
         group = raw_input('Name of the newsgroup to remove: ' ).lower()
     
     if not groups.has_key(group):
         print
-        print 'The newsgroup ' + group + ' does not exist'
-        print 'but you can send a rmgroup for it if you want.'
+        print 'The newsgroup ' + group + ' does not exist.'
+        print 'Yet, you can send a rmgroup message for it if you want.'
         print
     
     if raw_input('Do you want to generate a control article to *remove* ' + group + '? (y/n) ') == 'y':
         print
+
+        if not message:
+            print 'The current message which will be sent is:'
+            print
+
+            message = config['RMGROUP_MESSAGE'].replace('$GROUP$', group)
+
+            print message
+            print
+            if raw_input('Do you want to change it? (y/n) ') == 'y':
+                print
+                print 'Please enter the message you want to send.'
+                print 'End it with a line containing only "." (a dot).'
+                print
+
+                message = ''
+                buffer = raw_input('Message: ') + '\n'
+                while buffer != '.\n':
+                    message += buffer.rstrip() + '\n'
+                    buffer = raw_input('Message: ') + '\n'
+                print
+
         file_rmgroup = group + '-' + str(SECONDS)
         result = file(file_rmgroup + '.txt', 'wb')
         result.write('X-Signed-Headers: Subject,Control,Message-ID,Date,From,Sender\n')
@@ -411,7 +469,7 @@ def generate_rmgroup(groups, config, group=None, passphrase=None):
         result.write('Date: ' + pretty_time(SECONDS) + '\n')
         result.write('From: ' + config['NAME'] + ' <' + config['MAIL'] + '>\n')
         result.write('Sender: ' + config['MAIL'] + '\n\n')
-        result.write(config['RMGROUP_MESSAGE'].replace('$GROUP$', group) + '\n')
+        result.write(message + '\n')
         result.close()
         sign_message(config, file_rmgroup, group, message_id, 'rmgroup', passphrase)
     
@@ -425,12 +483,12 @@ def generate_checkgroups(config, passphrase=None, serial=None):
     """List the groups of the hierarchy."""
     while serial not in range(0,100):
         try:
-            print 'If it is your first checkgroups for today, leave it blank (default is 0).'
-            print 'Otherwise, increment this revision by one.'
-            serial = int(raw_input('Revision to use (0-99): '))
+            print 'If it is your first checkgroups for today, leave it blank (default is 1).'
+            print 'Otherwise, increment this revision number by one.'
+            serial = int(raw_input('Revision to use (1-99): '))
             print
         except:
-            serial = 0
+            serial = 1
 
     serial = '%02d' % serial
     file_checkgroups = 'checkgroups-' + str(SECONDS)
@@ -465,7 +523,7 @@ def manage_keys(config):
             print '-----------------------------------------------------------------------'
             print 'Please put the e-mail address from which you will send control articles'
             print 'in the key ID (the real name field).  And leave the other fields blank,'
-            print 'for better compatibility with Usenet softwares.'
+            print 'for better compatibility with Usenet software.'
             print 'Choose a 2048-bit RSA key which never expires.'
             print 'You should also provide a passphrase, for security reasons.'
             print 'There is no need to edit the key after it has been generated.'
@@ -491,14 +549,14 @@ def manage_keys(config):
             os.system(config['PROGRAM_GPG'] + ' --armor --output private-key.asc --export-secret-keys ' + key_name)
             os.chmod('private-key.asc', 0400)
             print
-            print 'Be careful: it is a security risk to export your private key.'
+            print 'Be careful:  it is a security risk to export your private key.'
             print 'Please make sure that nobody has access to it.'
         elif choice == 5:
             raw_input('Please put it in a file named secret-key.asc and press enter.')
             os.system(config['PROGRAM_GPG'] + ' --import secret-key.asc')
             print
             print 'Make sure that both the secret and public keys have just been imported.'
-            print 'The uid of them should be put as the ID variable set in this script.'
+            print 'Their uid should be put as the ID variable set in this script.'
         elif choice == 6:
             key_name = raw_input('Please enter the uid of the key to *remove*: ')
             os.system(config['PROGRAM_GPG'] + ' --delete-secret-and-public-key ' + key_name)
