@@ -4,7 +4,7 @@
 # Script to help in managing Usenet hierarchies.  It generates control
 # articles and handles PGP keys (generation and management).
 #
-# signcontrol.py -- v. 1.3.0 -- 2009/07/28.
+# signcontrol.py -- v. 1.3.1 -- 2009/12/20.
 # Written and maintained by Julien ÉLIE.
 # The source code is free to use, distribute, modify and study.
 #
@@ -16,6 +16,15 @@
 # Please also read:  <http://www.eyrie.org/~eagle/faqs/usenet-hier.html>.
 #
 # History:
+#
+# v. 1.3.1:  2009/12/20 -- compliance with RFC 5322 (Internet Message Format):
+#            use "-0000" instead of "+0000" to indicate a time zone at Universal
+#            Time ("-0000" means that the time is generated on a system that
+#            may be in a local time zone other than Universal Time); also remove
+#            the Sender: header.
+#            When a line in the body of a control article started with "Sender",
+#            a bug in signcontrol.py prevented the article from being properly
+#            signed.
 #
 # v. 1.3.0:  2009/07/28 -- remove the charset for a multipart/mixed block
 #            in newgroup articles, change the default serial number from 0 to 1
@@ -69,10 +78,10 @@ def print_error(error):
 
 def pretty_time(seconds):
     """Return the Date: header."""
-    # You might want to change the "+0000" (UTC) to fit your local time zone.
+    # You might want to change the "-0000" (UTC) to fit your local time zone.
     # If you do so, please use the same pattern, like "-0300" or "+0100" and
     # change time.gmtime() to time.localtime().
-    return time.strftime('%a, %d %b %Y %H:%M:%S +0000', time.gmtime(seconds))
+    return time.strftime('%a, %d %b %Y %H:%M:%S -0000', time.gmtime(seconds))
 
 
 def serial_time(seconds):
@@ -217,6 +226,8 @@ def manage_menu():
 
 def sign_message(config, file_message, group, message_id, type, passphrase=None):
     """Sign a control article."""
+    signatureWritten = False
+
     if passphrase:
         os.system(config['PROGRAM_GPG'] + ' --pgp2 -a -b -u "'+ config['ID'] + '" --passphrase "' + passphrase + '" -o ' + file_message + '.pgp ' + file_message + '.txt')
     else:
@@ -224,11 +235,17 @@ def sign_message(config, file_message, group, message_id, type, passphrase=None)
     
     result = file(file_message + '.sig', 'wb')
     for line in file(file_message + '.txt', 'rb'):
+        if signatureWritten:
+            result.write(line)
+            continue
+
         if not line.startswith('X-Signed-Headers'):
-            if not line.startswith('Sender'):
+            # From: is the last signed header.
+            if not line.startswith('From'):
                 result.write(line)
             else:
-                result.write('Sender: ' + config['MAIL'] + '\n')
+                # Rewrite the From: line exactly as we already wrote it.
+                result.write('From: ' + config['NAME'] + ' <' + config['MAIL'] + '>\n')
                 result.write('Approved: ' + config['MAIL'] + '\n')
                 if type == 'checkgroups' and not config['PRIVATE_HIERARCHY']:
                     result.write('Newsgroups: ' + group + ',news.admin.hierarchies\n')
@@ -252,9 +269,11 @@ def sign_message(config, file_message, group, message_id, type, passphrase=None)
                     if line2.startswith('Version:'):
                         version = line2.replace('Version: ', '')
                         version = version.replace(' ', '_')
-                        result.write('X-PGP-Sig: ' + version.rstrip() + ' Subject,Control,Message-ID,Date,From,Sender\n')
+                        result.write('X-PGP-Sig: ' + version.rstrip() + ' Subject,Control,Message-ID,Date,From\n')
                     elif len(line2) > 2:
                         result.write('\t' + line2.rstrip() + '\n')
+                signatureWritten = True
+
     result.close()
 
     os.remove(file_message + '.pgp')
@@ -390,7 +409,7 @@ def generate_newgroup(groups, config, group=None, moderated=None, description=No
         print
         file_newgroup = group + '-' + str(SECONDS)
         result = file(file_newgroup + '.txt', 'wb')
-        result.write('X-Signed-Headers: Subject,Control,Message-ID,Date,From,Sender\n')
+        result.write('X-Signed-Headers: Subject,Control,Message-ID,Date,From\n')
         if moderated:
             result.write('Subject: cmsg newgroup ' + group + ' moderated\n')
             result.write('Control: newgroup ' + group + ' moderated\n')
@@ -400,8 +419,7 @@ def generate_newgroup(groups, config, group=None, moderated=None, description=No
         message_id = '<newgroup-' + group + '-' + str(SECONDS) + '@' + config['HOST'] + '>'
         result.write('Message-ID: ' + message_id + '\n')
         result.write('Date: ' + pretty_time(SECONDS) + '\n')
-        result.write('From: ' + config['NAME'] + ' <' + config['MAIL'] + '>\n')
-        result.write('Sender: ' + config['MAIL'] + '\n\n')
+        result.write('From: ' + config['NAME'] + ' <' + config['MAIL'] + '>\n\n')
         result.write('This is a MIME NetNews control message.\n')
         result.write('--signcontrol\n')
         result.write('Content-Type: text/plain; charset=' + config['ENCODING'] + '\n\n')
@@ -461,14 +479,13 @@ def generate_rmgroup(groups, config, group=None, message=None, passphrase=None):
 
         file_rmgroup = group + '-' + str(SECONDS)
         result = file(file_rmgroup + '.txt', 'wb')
-        result.write('X-Signed-Headers: Subject,Control,Message-ID,Date,From,Sender\n')
+        result.write('X-Signed-Headers: Subject,Control,Message-ID,Date,From\n')
         result.write('Subject: cmsg rmgroup ' + group + '\n')
         result.write('Control: rmgroup ' + group + '\n')
         message_id = '<rmgroup-' + group + '-' + str(SECONDS) + '@' + config['HOST'] + '>'
         result.write('Message-ID: ' + message_id + '\n')
         result.write('Date: ' + pretty_time(SECONDS) + '\n')
-        result.write('From: ' + config['NAME'] + ' <' + config['MAIL'] + '>\n')
-        result.write('Sender: ' + config['MAIL'] + '\n\n')
+        result.write('From: ' + config['NAME'] + ' <' + config['MAIL'] + '>\n\n')
         result.write(message + '\n')
         result.close()
         sign_message(config, file_rmgroup, group, message_id, 'rmgroup', passphrase)
@@ -493,14 +510,13 @@ def generate_checkgroups(config, passphrase=None, serial=None):
     serial = '%02d' % serial
     file_checkgroups = 'checkgroups-' + str(SECONDS)
     result = file(file_checkgroups + '.txt', 'wb')
-    result.write('X-Signed-Headers: Subject,Control,Message-ID,Date,From,Sender\n')
+    result.write('X-Signed-Headers: Subject,Control,Message-ID,Date,From\n')
     result.write('Subject: cmsg checkgroups ' + config['CHECKGROUPS_SCOPE'] + ' #' + serial_time(SECONDS) + serial + '\n')
     result.write('Control: checkgroups ' + config['CHECKGROUPS_SCOPE'] + ' #' + serial_time(SECONDS) + serial + '\n')
     message_id = '<checkgroups-' + str(SECONDS) + '@' + config['HOST'] + '>'
     result.write('Message-ID: ' + message_id + '\n')
     result.write('Date: ' + pretty_time(SECONDS) + '\n')
-    result.write('From: ' + config['NAME'] + ' <' + config['MAIL'] + '>\n')
-    result.write('Sender: ' + config['MAIL'] + '\n\n')
+    result.write('From: ' + config['NAME'] + ' <' + config['MAIL'] + '>\n\n')
     for line in file(config['CHECKGROUPS_FILE'], 'r'):
         result.write(line.rstrip() + '\n')
     result.close()
