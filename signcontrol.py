@@ -4,7 +4,7 @@
 # Script to help in managing Usenet hierarchies.  It generates control
 # articles and handles PGP keys (generation and management).
 #
-# signcontrol.py -- v. 1.3.1 -- 2009/12/20.
+# signcontrol.py -- v. 1.3.2 -- 2009/12/23.
 # Written and maintained by Julien ÉLIE.
 # The source code is free to use, distribute, modify and study.
 #
@@ -16,6 +16,13 @@
 # Please also read:  <http://www.eyrie.org/~eagle/faqs/usenet-hier.html>.
 #
 # History:
+#
+# v. 1.3.2:  2009/12/23 -- use local time instead of UTC (thanks to Adam
+#            H. Kerman for the suggestion).
+#            Add flags to gpg when called:  --emit-version, --no-comments,
+#            --no-escape-from-lines and --no-throw-keyids.  Otherwise, the
+#            signature may not be valid (thanks to Robert Spier for the
+#            bug report).
 #
 # v. 1.3.1:  2009/12/20 -- compliance with RFC 5322 (Internet Message Format):
 #            use "-0000" instead of "+0000" to indicate a time zone at Universal
@@ -56,7 +63,7 @@ import time
 import shlex
 
 # Current time.
-SECONDS = int(time.time())
+TIME = time.localtime()
 
 
 def treat_exceptions(type, valeur, trace):
@@ -76,18 +83,29 @@ def print_error(error):
     print
 
 
-def pretty_time(seconds):
+def pretty_time(localtime):
     """Return the Date: header."""
-    # You might want to change the "-0000" (UTC) to fit your local time zone.
-    # If you do so, please use the same pattern, like "-0300" or "+0100" and
-    # change time.gmtime() to time.localtime().
-    return time.strftime('%a, %d %b %Y %H:%M:%S -0000', time.gmtime(seconds))
+    # As "%z" does not work on every platform with strftime(), we compute
+    # the time zone offset.
+    # You might want to use UTC with either "+0000" or "-0000", also changing
+    # time.localtime() to time.gmtime() for the definition of TIME above.
+    if localtime.tm_isdst > 0 and time.daylight:
+        offsetMinutes = - int(time.altzone / 60)
+    else:
+        offsetMinutes = - int(time.timezone / 60)
+    offset = "%+03d%02d" % (offsetMinutes / 60.0, offsetMinutes % 60)
+    return time.strftime('%a, %d %b %Y %H:%M:%S ' + offset, localtime)
 
 
-def serial_time(seconds):
+def serial_time(localtime):
     """Return a checkgroups serial number."""
     # Note that there is only one serial per day.
-    return time.strftime('%Y%m%d', time.gmtime(seconds))
+    return time.strftime('%Y%m%d', localtime)
+
+
+def epoch_time(localtime):
+    """Return the number of seconds since epoch."""
+    return str(int(time.mktime(localtime)))
 
 
 def read_configuration(file):
@@ -229,9 +247,9 @@ def sign_message(config, file_message, group, message_id, type, passphrase=None)
     signatureWritten = False
 
     if passphrase:
-        os.system(config['PROGRAM_GPG'] + ' --pgp2 -a -b -u "'+ config['ID'] + '" --passphrase "' + passphrase + '" -o ' + file_message + '.pgp ' + file_message + '.txt')
+        os.system(config['PROGRAM_GPG'] + ' --emit-version --no-comments --no-escape-from-lines --no-throw-keyids --pgp2 -a -b -u "'+ config['ID'] + '" --passphrase "' + passphrase + '" -o ' + file_message + '.pgp ' + file_message + '.txt')
     else:
-        os.system(config['PROGRAM_GPG'] + ' --pgp2 -a -b -u "'+ config['ID'] + '" -o ' + file_message + '.pgp ' + file_message + '.txt')
+        os.system(config['PROGRAM_GPG'] + ' --emit-version --no-comments --no-escape-from-lines --no-throw-keyids --pgp2 -a -b -u "'+ config['ID'] + '" -o ' + file_message + '.pgp ' + file_message + '.txt')
     
     result = file(file_message + '.sig', 'wb')
     for line in file(file_message + '.txt', 'rb'):
@@ -407,7 +425,7 @@ def generate_newgroup(groups, config, group=None, moderated=None, description=No
     
     if raw_input('Do you want to generate a control article for ' + group + '? (y/n) ') == 'y':
         print
-        file_newgroup = group + '-' + str(SECONDS)
+        file_newgroup = group + '-' + epoch_time(TIME)
         result = file(file_newgroup + '.txt', 'wb')
         result.write('X-Signed-Headers: Subject,Control,Message-ID,Date,From\n')
         if moderated:
@@ -416,9 +434,9 @@ def generate_newgroup(groups, config, group=None, moderated=None, description=No
         else:
             result.write('Subject: cmsg newgroup ' + group + '\n')
             result.write('Control: newgroup ' + group + '\n')
-        message_id = '<newgroup-' + group + '-' + str(SECONDS) + '@' + config['HOST'] + '>'
+        message_id = '<newgroup-' + group + '-' + epoch_time(TIME) + '@' + config['HOST'] + '>'
         result.write('Message-ID: ' + message_id + '\n')
-        result.write('Date: ' + pretty_time(SECONDS) + '\n')
+        result.write('Date: ' + pretty_time(TIME) + '\n')
         result.write('From: ' + config['NAME'] + ' <' + config['MAIL'] + '>\n\n')
         result.write('This is a MIME NetNews control message.\n')
         result.write('--signcontrol\n')
@@ -477,14 +495,14 @@ def generate_rmgroup(groups, config, group=None, message=None, passphrase=None):
                     buffer = raw_input('Message: ') + '\n'
                 print
 
-        file_rmgroup = group + '-' + str(SECONDS)
+        file_rmgroup = group + '-' + epoch_time(TIME)
         result = file(file_rmgroup + '.txt', 'wb')
         result.write('X-Signed-Headers: Subject,Control,Message-ID,Date,From\n')
         result.write('Subject: cmsg rmgroup ' + group + '\n')
         result.write('Control: rmgroup ' + group + '\n')
-        message_id = '<rmgroup-' + group + '-' + str(SECONDS) + '@' + config['HOST'] + '>'
+        message_id = '<rmgroup-' + group + '-' + epoch_time(TIME) + '@' + config['HOST'] + '>'
         result.write('Message-ID: ' + message_id + '\n')
-        result.write('Date: ' + pretty_time(SECONDS) + '\n')
+        result.write('Date: ' + pretty_time(TIME) + '\n')
         result.write('From: ' + config['NAME'] + ' <' + config['MAIL'] + '>\n\n')
         result.write(message + '\n')
         result.close()
@@ -508,14 +526,14 @@ def generate_checkgroups(config, passphrase=None, serial=None):
             serial = 1
 
     serial = '%02d' % serial
-    file_checkgroups = 'checkgroups-' + str(SECONDS)
+    file_checkgroups = 'checkgroups-' + epoch_time(TIME)
     result = file(file_checkgroups + '.txt', 'wb')
     result.write('X-Signed-Headers: Subject,Control,Message-ID,Date,From\n')
-    result.write('Subject: cmsg checkgroups ' + config['CHECKGROUPS_SCOPE'] + ' #' + serial_time(SECONDS) + serial + '\n')
-    result.write('Control: checkgroups ' + config['CHECKGROUPS_SCOPE'] + ' #' + serial_time(SECONDS) + serial + '\n')
-    message_id = '<checkgroups-' + str(SECONDS) + '@' + config['HOST'] + '>'
+    result.write('Subject: cmsg checkgroups ' + config['CHECKGROUPS_SCOPE'] + ' #' + serial_time(TIME) + serial + '\n')
+    result.write('Control: checkgroups ' + config['CHECKGROUPS_SCOPE'] + ' #' + serial_time(TIME) + serial + '\n')
+    message_id = '<checkgroups-' + epoch_time(TIME) + '@' + config['HOST'] + '>'
     result.write('Message-ID: ' + message_id + '\n')
-    result.write('Date: ' + pretty_time(SECONDS) + '\n')
+    result.write('Date: ' + pretty_time(TIME) + '\n')
     result.write('From: ' + config['NAME'] + ' <' + config['MAIL'] + '>\n\n')
     for line in file(config['CHECKGROUPS_FILE'], 'r'):
         result.write(line.rstrip() + '\n')
