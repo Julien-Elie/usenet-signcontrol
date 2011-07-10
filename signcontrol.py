@@ -4,7 +4,7 @@
 # Script to help in managing Usenet hierarchies.  It generates control
 # articles and handles PGP keys (generation and management).
 #
-# signcontrol.py -- v. 1.3.2 -- 2009/12/23.
+# signcontrol.py -- v. 1.3.3 -- 2011/07/11.
 # Written and maintained by Julien ÉLIE.
 # The source code is free to use, distribute, modify and study.
 #
@@ -16,6 +16,12 @@
 # Please also read:  <http://www.eyrie.org/~eagle/faqs/usenet-hier.html>.
 #
 # History:
+#
+# v. 1.3.3:  2011/07/11 -- automatically generate an Injection-Date: header field,
+#            and sign it.  It will prevent control articles from being maliciously
+#            reinjected into Usenet, and replayed by news servers compliant with
+#            RFC 5537 (that is to say without cutoff on the Date: header field when
+#            an Injection-Date: header field exists).
 #
 # v. 1.3.2:  2009/12/23 -- use local time instead of UTC (thanks to Adam
 #            H. Kerman for the suggestion).
@@ -287,7 +293,7 @@ def sign_message(config, file_message, group, message_id, type, passphrase=None)
                     if line2.startswith('Version:'):
                         version = line2.replace('Version: ', '')
                         version = version.replace(' ', '_')
-                        result.write('X-PGP-Sig: ' + version.rstrip() + ' Subject,Control,Message-ID,Date,From\n')
+                        result.write('X-PGP-Sig: ' + version.rstrip() + ' Subject,Control,Message-ID,Date,Injection-Date,From\n')
                     elif len(line2) > 2:
                         result.write('\t' + line2.rstrip() + '\n')
                 signatureWritten = True
@@ -427,7 +433,7 @@ def generate_newgroup(groups, config, group=None, moderated=None, description=No
         print
         file_newgroup = group + '-' + epoch_time(TIME)
         result = file(file_newgroup + '.txt', 'wb')
-        result.write('X-Signed-Headers: Subject,Control,Message-ID,Date,From\n')
+        result.write('X-Signed-Headers: Subject,Control,Message-ID,Date,Injection-Date,From\n')
         if moderated:
             result.write('Subject: cmsg newgroup ' + group + ' moderated\n')
             result.write('Control: newgroup ' + group + ' moderated\n')
@@ -437,6 +443,7 @@ def generate_newgroup(groups, config, group=None, moderated=None, description=No
         message_id = '<newgroup-' + group + '-' + epoch_time(TIME) + '@' + config['HOST'] + '>'
         result.write('Message-ID: ' + message_id + '\n')
         result.write('Date: ' + pretty_time(TIME) + '\n')
+        result.write('Injection-Date: ' + pretty_time(TIME) + '\n')
         result.write('From: ' + config['NAME'] + ' <' + config['MAIL'] + '>\n\n')
         result.write('This is a MIME NetNews control message.\n')
         result.write('--signcontrol\n')
@@ -497,12 +504,13 @@ def generate_rmgroup(groups, config, group=None, message=None, passphrase=None):
 
         file_rmgroup = group + '-' + epoch_time(TIME)
         result = file(file_rmgroup + '.txt', 'wb')
-        result.write('X-Signed-Headers: Subject,Control,Message-ID,Date,From\n')
+        result.write('X-Signed-Headers: Subject,Control,Message-ID,Date,Injection-Date,From\n')
         result.write('Subject: cmsg rmgroup ' + group + '\n')
         result.write('Control: rmgroup ' + group + '\n')
         message_id = '<rmgroup-' + group + '-' + epoch_time(TIME) + '@' + config['HOST'] + '>'
         result.write('Message-ID: ' + message_id + '\n')
         result.write('Date: ' + pretty_time(TIME) + '\n')
+        result.write('Injection-Date: ' + pretty_time(TIME) + '\n')
         result.write('From: ' + config['NAME'] + ' <' + config['MAIL'] + '>\n\n')
         result.write(message + '\n')
         result.close()
@@ -528,12 +536,13 @@ def generate_checkgroups(config, passphrase=None, serial=None):
     serial = '%02d' % serial
     file_checkgroups = 'checkgroups-' + epoch_time(TIME)
     result = file(file_checkgroups + '.txt', 'wb')
-    result.write('X-Signed-Headers: Subject,Control,Message-ID,Date,From\n')
+    result.write('X-Signed-Headers: Subject,Control,Message-ID,Date,Injection-Date,From\n')
     result.write('Subject: cmsg checkgroups ' + config['CHECKGROUPS_SCOPE'] + ' #' + serial_time(TIME) + serial + '\n')
     result.write('Control: checkgroups ' + config['CHECKGROUPS_SCOPE'] + ' #' + serial_time(TIME) + serial + '\n')
     message_id = '<checkgroups-' + epoch_time(TIME) + '@' + config['HOST'] + '>'
     result.write('Message-ID: ' + message_id + '\n')
     result.write('Date: ' + pretty_time(TIME) + '\n')
+    result.write('Injection-Date: ' + pretty_time(TIME) + '\n')
     result.write('From: ' + config['NAME'] + ' <' + config['MAIL'] + '>\n\n')
     for line in file(config['CHECKGROUPS_FILE'], 'r'):
         result.write(line.rstrip() + '\n')
