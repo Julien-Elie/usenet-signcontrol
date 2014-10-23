@@ -1,16 +1,21 @@
 #!/usr/bin/python
-# -*- coding: latin1 -*-
+# -*- coding: utf-8 -*-
 #
 # Script to help in managing Usenet hierarchies.  It generates control
 # articles and handles PGP keys (generation and management).
 #
 # signcontrol.py -- v. 1.3.3 -- 2011/07/11.
-# Written and maintained by Julien ÉLIE.
-# The source code is free to use, distribute, modify and study.
 #
-# Feel free to use it.  I would be glad to know whether you find it useful
-# for your hierarchy.
+# Written and maintained by Julien Ã‰LIE.
+#
+# The source code is free to use, distribute, modify, and study.
+# It is distributed under the MIT License.
+#
+# Feel free to use it.  I would be glad to know whether you find it useful for
+# your hierarchy.  Any bug reports, bug fixes, and improvements are very much
+# welcome.
 # Contact:  <http://www.trigofacile.com/maths/contact/index.htm>.
+# Issue tracker:  <https://github.com/Julien-Elie/usenet-signcontrol/issues>.
 #
 # Last version:  <http://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm>.
 # Please also read:  <http://www.eyrie.org/~eagle/faqs/usenet-hier.html>.
