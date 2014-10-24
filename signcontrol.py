@@ -4,7 +4,7 @@
 # Script to help in managing Usenet hierarchies.  It generates control
 # articles and handles PGP keys (generation and management).
 #
-# signcontrol.py -- v. 1.3.3 -- 2011/07/11.
+# signcontrol.py -- v. 1.4.0 -- 2014/xx/xx (not yet released).
 #
 # Written and maintained by Julien ÉLIE.
 #
@@ -21,6 +21,10 @@
 # Please also read:  <http://www.eyrie.org/~eagle/faqs/usenet-hier.html>.
 #
 # History:
+#
+# v. 1.4.0:  2014/xx/xx -- add the --no-tty flag to gpg when --passphrase is
+#            also used.  Otherwise, an error occurs when running signcontrol
+#            from cron.  Thanks to Matija Nalis for the bug report.
 #
 # v. 1.3.3:  2011/07/11 -- automatically generate an Injection-Date: header field,
 #            and sign it.  It will prevent control articles from being maliciously
@@ -258,7 +262,7 @@ def sign_message(config, file_message, group, message_id, type, passphrase=None)
     signatureWritten = False
 
     if passphrase:
-        os.system(config['PROGRAM_GPG'] + ' --emit-version --no-comments --no-escape-from-lines --no-throw-keyids --pgp2 -a -b -u "'+ config['ID'] + '" --passphrase "' + passphrase + '" -o ' + file_message + '.pgp ' + file_message + '.txt')
+        os.system(config['PROGRAM_GPG'] + ' --emit-version --no-comments --no-escape-from-lines --no-throw-keyids --pgp2 -a -b -u "'+ config['ID'] + '" --no-tty --passphrase "' + passphrase + '" -o ' + file_message + '.pgp ' + file_message + '.txt')
     else:
         os.system(config['PROGRAM_GPG'] + ' --emit-version --no-comments --no-escape-from-lines --no-throw-keyids --pgp2 -a -b -u "'+ config['ID'] + '" -o ' + file_message + '.pgp ' + file_message + '.txt')
     
