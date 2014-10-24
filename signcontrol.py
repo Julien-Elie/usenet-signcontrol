@@ -14,11 +14,18 @@
 # Feel free to use it.  I would be glad to know whether you find it useful for
 # your hierarchy.  Any bug reports, bug fixes, and improvements are very much
 # welcome.
-# Contact:  <http://www.trigofacile.com/maths/contact/index.htm>.
-# Issue tracker:  <https://github.com/Julien-Elie/usenet-signcontrol/issues>.
 #
-# Last version:  <http://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm>.
-# Please also read:  <http://www.eyrie.org/~eagle/faqs/usenet-hier.html>.
+# Contact:
+#   <http://www.trigofacile.com/maths/contact/index.htm>.
+# Issue tracker:
+#   <https://github.com/Julien-Elie/usenet-signcontrol/issues>.
+#
+# Upstream web site:
+#   <http://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm>.
+# Github repository:
+#   <https://github.com/Julien-Elie/usenet-signcontrol>.
+# Please also read:
+#   <http://www.eyrie.org/~eagle/faqs/usenet-hier.html>.
 #
 # History:
 #
@@ -26,11 +33,11 @@
 #            also used.  Otherwise, an error occurs when running signcontrol
 #            from cron.  Thanks to Matija Nalis for the bug report.
 #
-# v. 1.3.3:  2011/07/11 -- automatically generate an Injection-Date: header field,
-#            and sign it.  It will prevent control articles from being maliciously
-#            reinjected into Usenet, and replayed by news servers compliant with
-#            RFC 5537 (that is to say without cutoff on the Date: header field when
-#            an Injection-Date: header field exists).
+# v. 1.3.3:  2011/07/11 -- automatically generate an Injection-Date: header
+#            field, and sign it.  It will prevent control articles from being
+#            maliciously reinjected into Usenet, and replayed by news servers
+#            compliant with RFC 5537 (that is to say without cutoff on the
+#            Date: header field when an Injection-Date: header field exists).
 #
 # v. 1.3.2:  2009/12/23 -- use local time instead of UTC (thanks to Adam
 #            H. Kerman for the suggestion).
@@ -43,9 +50,9 @@
 #            use "-0000" instead of "+0000" to indicate a time zone at Universal
 #            Time ("-0000" means that the time is generated on a system that
 #            may be in a local time zone other than Universal Time); also remove
-#            the Sender: header.
+#            the Sender: header field.
 #            When a line in the body of a control article started with "Sender",
-#            a bug in signcontrol.py prevented the article from being properly
+#            a bug in signcontrol prevented the article from being properly
 #            signed.
 #
 # v. 1.3.0:  2009/07/28 -- remove the charset for a multipart/mixed block
@@ -57,7 +64,7 @@
 #            in a newsgroup description.
 #
 # v. 1.2.0:  2008/11/17 -- support for USEPRO:  checkgroups scope, checkgroups
-#            serial numbers and accurate Content-Type: headers.
+#            serial numbers and accurate Content-Type: header fields.
 #
 # v. 1.1.0:  2007/05/09 -- fix the newgroups line when creating a newsgroup,
 #            use a separate config file, possibility to import signcontrol from
@@ -99,7 +106,7 @@ def print_error(error):
 
 
 def pretty_time(localtime):
-    """Return the Date: header."""
+    """Return the Date: header field."""
     # As "%z" does not work on every platform with strftime(), we compute
     # the time zone offset.
     # You might want to use UTC with either "+0000" or "-0000", also changing
@@ -273,7 +280,7 @@ def sign_message(config, file_message, group, message_id, type, passphrase=None)
             continue
 
         if not line.startswith('X-Signed-Headers'):
-            # From: is the last signed header.
+            # From: is the last signed header field.
             if not line.startswith('From'):
                 result.write(line)
             else:
