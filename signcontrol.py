@@ -32,6 +32,8 @@
 # v. 1.4.0:  2014/xx/xx -- add the --no-tty flag to gpg when --passphrase is
 #            also used.  Otherwise, an error occurs when running signcontrol
 #            from cron.  Thanks to Matija Nalis for the bug report.
+#            When managing PGP keys, their full uid is now expected, instead
+#            of only a subpart. 
 #
 # v. 1.3.3:  2011/07/11 -- automatically generate an Injection-Date: header
 #            field, and sign it.  It will prevent control articles from being
@@ -167,7 +169,7 @@ def read_configuration(file):
         if not config.has_key(token):
             print 'You must update the configuration file.'
             print 'The parameter ' + token + ' is missing.'
-            raw_input('Please download a new configuration file and parameter it before using this script.')
+            raw_input('Please download the latest version of the configuration file and parameter it before using this script.')
             sys.exit(2)
     return config
 
@@ -567,7 +569,10 @@ def generate_checkgroups(config, passphrase=None, serial=None):
 
 
 def manage_keys(config):
-    """Manage PGP keys."""
+    """ Useful wrappers around the gpg program to manage PGP keys
+        (generate, import, export, remove, and revoke).
+        Argument:  config (the dictionary of parameters from signcontrol.conf).
+    """
     choice = 0
     while choice != 8:
         choice = manage_menu()
@@ -575,8 +580,8 @@ def manage_keys(config):
             print 'You currently have the following secret keys installed:'
             print
             os.system(config['PROGRAM_GPG'] + ' --list-secret-keys')
-            print 'The uid of your secret key should be the same as the ID variable'
-            print 'which is set in this script.'
+            print 'Please note that the uid of your secret key and the value of'
+            print 'the ID parameter set in signcontrol.conf should be the same.'
         elif choice == 2:
             print
             print '-----------------------------------------------------------------------'
@@ -588,11 +593,11 @@ def manage_keys(config):
             print 'There is no need to edit the key after it has been generated.'
             print
             print 'Please note that the key generation may not finish if it is launched'
-            print 'on a remote server.  Use your own computer instead and import the key'
-            print 'on the remote one afterwards.'
+            print 'on a remote server, owing to a lack of enough entropy.  Use your own'
+            print 'computer instead and import the key on the remote one afterwards.'
             print '-----------------------------------------------------------------------'
             print
-            os.system(config['PROGRAM_GPG'] + ' --gen-key --pgp2 --allow-freeform-uid')
+            os.system(config['PROGRAM_GPG'] + ' --gen-key --allow-freeform-uid')
             print
             print 'After having generated these keys, you should export your PUBLIC key'
             print 'and make it public (in the web site of your hierarchy, along with'
@@ -601,27 +606,28 @@ def manage_keys(config):
         elif choice == 3:
             print 'The key will be written to the file public-key.asc.'
             key_name = raw_input('Please enter the uid of the public key to export: ')
-            os.system(config['PROGRAM_GPG'] + ' --armor --output public-key.asc --export ' + key_name)
+            os.system(config['PROGRAM_GPG'] + ' --armor --output public-key.asc --export "=' + key_name + '"')
         elif choice == 4:
             print 'The key will be written to the file private-key.asc.'
             key_name = raw_input('Please enter the uid of the secret key to export: ')
-            os.system(config['PROGRAM_GPG'] + ' --armor --output private-key.asc --export-secret-keys ' + key_name)
-            os.chmod('private-key.asc', 0400)
-            print
-            print 'Be careful:  it is a security risk to export your private key.'
-            print 'Please make sure that nobody has access to it.'
+            os.system(config['PROGRAM_GPG'] + ' --armor --output private-key.asc --export-secret-keys "=' + key_name + '"')
+            if os.path.isfile('private-key.asc'):
+                os.chmod('private-key.asc', 0400)
+                print
+                print 'Be careful:  it is a security risk to export your private key.'
+                print 'Please make sure that nobody has access to it.'
         elif choice == 5:
             raw_input('Please put it in a file named secret-key.asc and press enter.')
             os.system(config['PROGRAM_GPG'] + ' --import secret-key.asc')
             print
-            print 'Make sure that both the secret and public keys have just been imported.'
-            print 'Their uid should be put as the ID variable set in this script.'
+            print 'Make sure that both the secret and public keys have properly been imported.'
+            print 'Their uid should be put as the value of the ID parameter set in signcontrol.conf.'
         elif choice == 6:
             key_name = raw_input('Please enter the uid of the key to *remove*: ')
-            os.system(config['PROGRAM_GPG'] + ' --delete-secret-and-public-key ' + key_name)
+            os.system(config['PROGRAM_GPG'] + ' --delete-secret-and-public-key "=' + key_name + '"')
         elif choice == 7:
             key_name = raw_input('Please enter the uid of the secret key to revoke: ')
-            os.system(config['PROGRAM_GPG'] + ' --gen-revoke ' + key_name)
+            os.system(config['PROGRAM_GPG'] + ' --gen-revoke "=' + key_name + "'")
         print
 
 
