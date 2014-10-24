@@ -90,10 +90,15 @@ import shlex
 TIME = time.localtime()
 
 
-def treat_exceptions(type, valeur, trace):
-    """Pretty print stack traces of this script, in case an error occurs."""
+def treat_exceptions(type, value, traceback):
+    """ Pretty print stack traces of this script, in case an error occurs.
+        Arguments:  type (the type of the exception)
+                    value (the value of the exception)
+                    traceback (the traceback of the exception)
+        No return value (the script exits with status 2)
+    """
     print "-----------------------------------------------------------"
-    print "\n".join(traceback.format_exception(type, valeur, trace))
+    print "\n".join(traceback.format_exception(type, value, traceback))
     print "-----------------------------------------------------------"
     raw_input('An error has just occurred.')
     sys.exit(2)
@@ -101,14 +106,20 @@ sys.excepthook = treat_exceptions
 
 
 def print_error(error):
-    """Pretty print error messages."""
+    """ Pretty print error messages.
+        Argument:  error (the error to print)
+        No return value
+    """
     print
     print '--> ' + error + ' <--'
     print
 
 
 def pretty_time(localtime):
-    """Return the Date: header field."""
+    """ Return the Date: header field.
+        Argument:  localtime (a time value, representing local time)
+        Return value:  a string suitable to be used in a Date: header field
+    """
     # As "%z" does not work on every platform with strftime(), we compute
     # the time zone offset.
     # You might want to use UTC with either "+0000" or "-0000", also changing
@@ -122,18 +133,28 @@ def pretty_time(localtime):
 
 
 def serial_time(localtime):
-    """Return a checkgroups serial number."""
+    """ Return a checkgroups serial number.
+        Argument:  localtime (a time value, representing local time)
+        Return value:  a string suitable to be used as a serial number
+    """
     # Note that there is only one serial per day.
     return time.strftime('%Y%m%d', localtime)
 
 
 def epoch_time(localtime):
-    """Return the number of seconds since epoch."""
+    """ Return the number of seconds since epoch.
+        Argument:  localtime (a time value, representing local time)
+        Return value:  the number of seconds since epoch, as a string
+    """
     return str(int(time.mktime(localtime)))
 
 
 def read_configuration(file):
-    """Parse the configuration file."""
+    """ Parse the configuration file.
+        Argument:  file (path to the signcontrol.conf configuration file)
+        Return value:  a dictionary {parameter: value} representing
+                       the contents of the configuration file
+    """
     TOKENS = ['PROGRAM_GPG', 'ID', 'MAIL', 'HOST', 'ADMIN_GROUP', 'NAME',
               'CHECKGROUPS_SCOPE', 'URL',
               'NEWGROUP_MESSAGE_MODERATED', 'NEWGROUP_MESSAGE_UNMODERATED',
@@ -175,7 +196,11 @@ def read_configuration(file):
 
 
 def read_checkgroups(path):
-    """Open a checkgroups file and return a dictionary {group: description}."""
+    """ Parse a checkgroups file.
+        Argument:  path (path of the checkgroups file)
+        Return value:  a dictionary {newsgroup: description} representing
+                       the contents of the checkgroups
+    """
     # Usually for the first use of the script.
     if not os.path.isfile(path):
         print 'No checkgroups file found.'
@@ -203,7 +228,11 @@ def read_checkgroups(path):
 
 
 def write_checkgroups(groups, path):
-    """Write the current checkgroups file."""
+    """ Write the current checkgroups file.
+        Arguments:  groups (a dictionary representing a checkgroups)
+                    path (path of the checkgroups file)
+        No return value
+    """
     keys = groups.keys()
     keys.sort()
     checkgroups_file = file(path, 'wb')
@@ -220,13 +249,15 @@ def write_checkgroups(groups, path):
 
 
 def choice_menu():
-    """Initial menu."""
+    """ Print the initial menu, and waits for the user to make a choice.
+        Return value:  the number representing the user's choice
+    """
     while True:
         print
         print 'What do you want to do?'
         print '-----------------------'
         print '1. Generate a newgroup control article (create or change a newsgroup)'
-        print '2. Generate a rmgroup control article (remove a newsgroup)'
+        print '2. Generate an rmgroup control article (remove a newsgroup)'
         print '3. Generate a checkgroups control article (list of newsgroups)'
         print '4. Manage my PGP keys (generate/import/export/remove/revoke)'
         print '5. Quit'
@@ -242,7 +273,10 @@ def choice_menu():
 
 
 def manage_menu():
-    """Second menu for the management of PGP keys."""
+    """ Print the menu related to the management of PGP keys, and waits
+        for the user to make a choice.
+        Return value:  the number representing the user's choice
+    """
     while True:
         print
         print 'What do you want to do?'
@@ -267,7 +301,15 @@ def manage_menu():
 
 
 def sign_message(config, file_message, group, message_id, type, passphrase=None):
-    """Sign a control article."""
+    """ Sign a control article.
+        Arguments:  config (the dictionary of parameters from signcontrol.conf)
+                    file_message (the file name of the message to sign)
+                    group (the name of the newsgroup)
+                    message_id (the Message-ID of the message)
+                    type (the type of the control article)
+                    passphrase (if given, the passphrase of the private key)
+        No return value
+    """
     signatureWritten = False
 
     if passphrase:
@@ -335,7 +377,16 @@ def sign_message(config, file_message, group, message_id, type, passphrase=None)
 
 
 def generate_newgroup(groups, config, group=None, moderated=None, description=None, message=None, passphrase=None):
-    """Create a new group."""
+    """ Create a new group.
+        Arguments:  groups (the dictionary representing the checkgroups)
+                    config (the dictionary of parameters from signcontrol.conf)
+                    group (if given, the name of the newsgroup)
+                    moderated (if given, whether the newsgroup is moderated)
+                    description (if given, the description of the newsgroup)
+                    message (if given, the text to write in the control article)
+                    passphrase (if given, the passphrase of the private key)
+        No return value
+    """
     while not group:
         group = raw_input('Name of the newsgroup to create: ').lower()
         components = group.split('.')
@@ -486,14 +537,21 @@ def generate_newgroup(groups, config, group=None, moderated=None, description=No
 
 
 def generate_rmgroup(groups, config, group=None, message=None, passphrase=None):
-    """Remove a group."""
+    """ Remove a group.
+        Arguments:  groups (the dictionary representing the checkgroups)
+                    config (the dictionary of parameters from signcontrol.conf)
+                    group (if given, the name of the newsgroup)
+                    message (if given, the text to write in the control article)
+                    passphrase (if given, the passphrase of the private key)
+        No return value
+    """
     while not group:
         group = raw_input('Name of the newsgroup to remove: ' ).lower()
     
     if not groups.has_key(group):
         print
         print 'The newsgroup ' + group + ' does not exist.'
-        print 'Yet, you can send a rmgroup message for it if you want.'
+        print 'Yet, you can send an rmgroup message for it if you want.'
         print
     
     if raw_input('Do you want to generate a control article to *remove* ' + group + '? (y/n) ') == 'y':
@@ -541,7 +599,12 @@ def generate_rmgroup(groups, config, group=None, message=None, passphrase=None):
 
 
 def generate_checkgroups(config, passphrase=None, serial=None):
-    """List the groups of the hierarchy."""
+    """ List the groups of the hierarchy.
+        Arguments:  config (the dictionary of parameters from signcontrol.conf)
+                    passphrase (if given, the passphrase of the private key)
+                    serial (if given, the serial value to use)
+        No return value
+    """
     while serial not in range(0,100):
         try:
             print 'If it is your first checkgroups for today, leave it blank (default is 1).'
@@ -571,7 +634,8 @@ def generate_checkgroups(config, passphrase=None, serial=None):
 def manage_keys(config):
     """ Useful wrappers around the gpg program to manage PGP keys
         (generate, import, export, remove, and revoke).
-        Argument:  config (the dictionary of parameters from signcontrol.conf).
+        Argument:  config (the dictionary of parameters from signcontrol.conf)
+        No return value
     """
     choice = 0
     while choice != 8:
@@ -632,7 +696,8 @@ def manage_keys(config):
 
 
 if __name__ == "__main__":
-    """The main function."""
+    """ The main function.
+    """
     config = read_configuration(CONFIGURATION_FILE)
     if not os.path.isfile(config['PROGRAM_GPG']):
         print 'You must install GnuPG <http://www.gnupg.org/> and edit this script to put'
