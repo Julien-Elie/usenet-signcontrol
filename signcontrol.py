@@ -318,6 +318,12 @@ def sign_message(config, file_message, group, message_id, type, passphrase=None)
     else:
         os.system(config['PROGRAM_GPG'] + ' --emit-version --no-comments --no-escape-from-lines --no-throw-keyids --pgp2 --armor --detach-sign --local-user "='+ config['ID'] + '" --output ' + file_message + '.pgp ' + file_message + '.txt')
     
+    if not os.path.isfile(file_message + '.pgp'):
+        print_error('Signature generation failed.')
+        print 'Please verify the availability of the secret key.'
+        os.remove(file_message + '.txt')
+        return
+
     result = file(file_message + '.sig', 'wb')
     for line in file(file_message + '.txt', 'rb'):
         if signatureWritten:
