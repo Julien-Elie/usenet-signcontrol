@@ -91,7 +91,7 @@ import shlex
 TIME = time.localtime()
 
 
-def treat_exceptions(type, value, traceback):
+def treat_exceptions(type, value, stacktrace):
     """ Pretty print stack traces of this script, in case an error occurs.
         Arguments:  type (the type of the exception)
                     value (the value of the exception)
@@ -99,7 +99,7 @@ def treat_exceptions(type, value, traceback):
         No return value (the script exits with status 2)
     """
     print "-----------------------------------------------------------"
-    print "\n".join(traceback.format_exception(type, value, traceback))
+    print "\n".join(traceback.format_exception(type, value, stacktrace))
     print "-----------------------------------------------------------"
     raw_input('An error has just occurred.')
     sys.exit(2)
