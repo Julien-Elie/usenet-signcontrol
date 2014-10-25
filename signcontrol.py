@@ -321,7 +321,6 @@ def sign_message(config, file_message, group, message_id, type, passphrase=None)
     if not os.path.isfile(file_message + '.pgp'):
         print_error('Signature generation failed.')
         print 'Please verify the availability of the secret key.'
-        os.remove(file_message + '.txt')
         return
 
     result = file(file_message + '.sig', 'wb')
@@ -368,7 +367,7 @@ def sign_message(config, file_message, group, message_id, type, passphrase=None)
     result.close()
 
     os.remove(file_message + '.pgp')
-    os.remove(file_message + '.txt')
+
     print
     print 'Do not worry if the program complains about detached signatures or MD5.'
     print 'You can now post the file ' + file_message + '.sig using rnews or a similar tool.'
@@ -537,6 +536,7 @@ def generate_newgroup(groups, config, group=None, moderated=None, description=No
         result.write('\n--signcontrol--\n')
         result.close()
         sign_message(config, file_newgroup, group, message_id, 'newgroup', passphrase)
+        os.remove(file_newgroup + '.txt')
     
     if raw_input('Do you want to update the current checkgroups file? (y/n) ') == 'y':
         groups[group] = description
@@ -598,6 +598,7 @@ def generate_rmgroup(groups, config, group=None, message=None, passphrase=None):
         result.write(message + '\n')
         result.close()
         sign_message(config, file_rmgroup, group, message_id, 'rmgroup', passphrase)
+        os.remove(file_rmgroup + '.txt')
     
     if groups.has_key(group):
         if raw_input('Do you want to update the current checkgroups file? (y/n) ') == 'y':
@@ -636,6 +637,7 @@ def generate_checkgroups(config, passphrase=None, serial=None):
         result.write(line.rstrip() + '\n')
     result.close()
     sign_message(config, file_checkgroups, config['ADMIN_GROUP'], message_id, 'checkgroups', passphrase)
+    os.remove(file_checkgroups + '.txt')
 
 
 def manage_keys(config):
