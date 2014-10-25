@@ -32,8 +32,9 @@
 # v. 1.4.0:  2014/xx/xx -- add the --no-tty flag to gpg when --passphrase is
 #            also used.  Otherwise, an error occurs when running signcontrol
 #            from cron.  Thanks to Matija Nalis for the bug report.
-#            When managing PGP keys, their full uid is now expected, instead
-#            of only a subpart. 
+#            - When managing PGP keys, their full uid is now expected, instead
+#            of only a subpart.
+#            - Listing secret keys now also shows their fingerprint.
 #
 # v. 1.3.3:  2011/07/11 -- automatically generate an Injection-Date: header
 #            field, and sign it.  It will prevent control articles from being
@@ -43,7 +44,7 @@
 #
 # v. 1.3.2:  2009/12/23 -- use local time instead of UTC (thanks to Adam
 #            H. Kerman for the suggestion).
-#            Add flags to gpg when called:  --emit-version, --no-comments,
+#            - Add flags to gpg when called:  --emit-version, --no-comments,
 #            --no-escape-from-lines and --no-throw-keyids.  Otherwise, the
 #            signature may not be valid (thanks to Robert Spier for the
 #            bug report).
@@ -53,9 +54,9 @@
 #            Time ("-0000" means that the time is generated on a system that
 #            may be in a local time zone other than Universal Time); also remove
 #            the Sender: header field.
-#            When a line in the body of a control article started with "Sender",
-#            a bug in signcontrol prevented the article from being properly
-#            signed.
+#            - When a line in the body of a control article started with
+#            "Sender", a bug in signcontrol prevented the article from being
+#            properly signed.
 #
 # v. 1.3.0:  2009/07/28 -- remove the charset for a multipart/mixed block
 #            in newgroup articles, change the default serial number from 0 to 1
@@ -313,9 +314,9 @@ def sign_message(config, file_message, group, message_id, type, passphrase=None)
     signatureWritten = False
 
     if passphrase:
-        os.system(config['PROGRAM_GPG'] + ' --emit-version --no-comments --no-escape-from-lines --no-throw-keyids --pgp2 -a -b -u "'+ config['ID'] + '" --no-tty --passphrase "' + passphrase + '" -o ' + file_message + '.pgp ' + file_message + '.txt')
+        os.system(config['PROGRAM_GPG'] + ' --emit-version --no-comments --no-escape-from-lines --no-throw-keyids --pgp2 --armor --detach-sign --local-user "='+ config['ID'] + '" --no-tty --passphrase "' + passphrase + '" --output ' + file_message + '.pgp ' + file_message + '.txt')
     else:
-        os.system(config['PROGRAM_GPG'] + ' --emit-version --no-comments --no-escape-from-lines --no-throw-keyids --pgp2 -a -b -u "'+ config['ID'] + '" -o ' + file_message + '.pgp ' + file_message + '.txt')
+        os.system(config['PROGRAM_GPG'] + ' --emit-version --no-comments --no-escape-from-lines --no-throw-keyids --pgp2 --armor --detach-sign --local-user "='+ config['ID'] + '" --output ' + file_message + '.pgp ' + file_message + '.txt')
     
     result = file(file_message + '.sig', 'wb')
     for line in file(file_message + '.txt', 'rb'):
@@ -643,7 +644,7 @@ def manage_keys(config):
         if choice == 1:
             print 'You currently have the following secret keys installed:'
             print
-            os.system(config['PROGRAM_GPG'] + ' --list-secret-keys')
+            os.system(config['PROGRAM_GPG'] + ' --list-secret-keys --with-fingerprint')
             print 'Please note that the uid of your secret key and the value of'
             print 'the ID parameter set in signcontrol.conf should be the same.'
         elif choice == 2:
