@@ -95,7 +95,7 @@ def treat_exceptions(type, value, stacktrace):
     """ Pretty print stack traces of this script, in case an error occurs.
         Arguments:  type (the type of the exception)
                     value (the value of the exception)
-                    traceback (the traceback of the exception)
+                    stacktrace (the traceback of the exception)
         No return value (the script exits with status 2)
     """
     print "-----------------------------------------------------------"
@@ -426,7 +426,7 @@ def generate_newgroup(groups, config, group=None, moderated=None, description=No
         print 'These new settings (status and description) will override the current ones.'
         print
     
-    if moderated == None:
+    if moderated is None:
         if raw_input('Is ' + group + ' a moderated newsgroup? (y/n) ' ) == 'y':
             moderated = True
             print
