@@ -180,7 +180,7 @@ def read_configuration(file):
             parameter = token
         elif token != '=' and parameter:
             if parameter == 'PRIVATE_HIERARCHY':
-                if token == 'True':
+                if token == 'True' or token == 'true':
                     config[parameter] = True
                 else:
                     config[parameter] = False
@@ -888,8 +888,7 @@ The file which contains the current checkgroups.
 
 =item B<ENCODING>
 
-The encoding of the control articles.  The default value is
-C<ISO-8859-1>.
+The encoding of control articles.  The default value is C<ISO-8859-1>.
 
 =back
 
