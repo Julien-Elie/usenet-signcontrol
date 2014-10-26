@@ -4,7 +4,7 @@
 # Script to help in managing Usenet hierarchies.  It generates control
 # articles and handles PGP keys (generation and management).
 #
-# signcontrol.py -- v. 1.4.0 -- 2014/xx/xx (not yet released).
+# signcontrol.py -- v. 1.4.0 -- 2014/10/26
 #
 # Written and maintained by Julien ÉLIE.
 #
@@ -16,20 +16,20 @@
 # welcome.
 #
 # Contact:
-#   <http://www.trigofacile.com/maths/contact/index.htm>.
+#   <http://www.trigofacile.com/maths/contact/index.htm>
 # Issue tracker:
-#   <https://github.com/Julien-Elie/usenet-signcontrol/issues>.
+#   <https://github.com/Julien-Elie/usenet-signcontrol/issues>
 #
 # Upstream web site:
-#   <http://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm>.
+#   <http://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm>
 # Github repository:
-#   <https://github.com/Julien-Elie/usenet-signcontrol>.
+#   <https://github.com/Julien-Elie/usenet-signcontrol>
 # Please also read:
-#   <http://www.eyrie.org/~eagle/faqs/usenet-hier.html>.
+#   <http://www.eyrie.org/~eagle/faqs/usenet-hier.html>
 #
 # History:
 #
-# v. 1.4.0:  2014/xx/xx -- add the --no-tty flag to gpg when --passphrase is
+# v. 1.4.0:  2014/10/26 -- add the --no-tty flag to gpg when --passphrase is
 #            also used.  Otherwise, an error occurs when running signcontrol
 #            from cron.  Thanks to Matija Nalis for the bug report.
 #            - Add the PGP2_COMPATIBILITY parameter to generate control
@@ -37,6 +37,8 @@
 #            - When managing PGP keys, their full uid is now expected, instead
 #            of only a subpart.
 #            - Listing secret keys now also shows their fingerprint.
+#            - Improve documentation, along with the creation of a Git
+#             repository on Github.
 #
 # v. 1.3.3:  2011/07/11 -- automatically generate an Injection-Date: header
 #            field, and sign it.  It will prevent control articles from being
