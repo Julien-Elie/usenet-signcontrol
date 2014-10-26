@@ -32,6 +32,8 @@
 # v. 1.4.0:  2014/xx/xx -- add the --no-tty flag to gpg when --passphrase is
 #            also used.  Otherwise, an error occurs when running signcontrol
 #            from cron.  Thanks to Matija Nalis for the bug report.
+#            - Add the PGP2_COMPATIBILITY parameter to generate control
+#            articles compatible with MIT PGP 2.6.2 (or equivalent).
 #            - When managing PGP keys, their full uid is now expected, instead
 #            of only a subpart.
 #            - Listing secret keys now also shows their fingerprint.
@@ -156,7 +158,8 @@ def read_configuration(file):
         Return value:  a dictionary {parameter: value} representing
                        the contents of the configuration file
     """
-    TOKENS = ['PROGRAM_GPG', 'ID', 'MAIL', 'HOST', 'ADMIN_GROUP', 'NAME',
+    TOKENS = ['PROGRAM_GPG', 'PGP2_COMPATIBILITY', 'ID', 'MAIL', 'HOST',
+              'ADMIN_GROUP', 'NAME',
               'CHECKGROUPS_SCOPE', 'URL',
               'NEWGROUP_MESSAGE_MODERATED', 'NEWGROUP_MESSAGE_UNMODERATED',
               'RMGROUP_MESSAGE', 'PRIVATE_HIERARCHY', 'CHECKGROUPS_FILE',
@@ -179,7 +182,14 @@ def read_configuration(file):
         if token in TOKENS:
             parameter = token
         elif token != '=' and parameter:
-            if parameter == 'PRIVATE_HIERARCHY':
+            if parameter == 'PGP2_COMPATIBILITY':
+                if token == 'True' or token == 'true':
+                    config[parameter] = [('--pgp2', '-pgp2'), ('', '')]
+                elif token == 'Only' or token == 'only':
+                    config[parameter] = [('--pgp2', '-pgp2')]
+                else:
+                    config[parameter] = [('', '')]
+            elif parameter == 'PRIVATE_HIERARCHY':
                 if token == 'True' or token == 'true':
                     config[parameter] = True
                 else:
@@ -301,22 +311,23 @@ def manage_menu():
             print_error('Please enter a number between 1 and 8.')
 
 
-def sign_message(config, file_message, group, message_id, type, passphrase=None):
-    """ Sign a control article.
+def generate_signed_message(config, file_message, group, message_id, type, passphrase=None, flag=''):
+    """ Generate signed control articles.
         Arguments:  config (the dictionary of parameters from signcontrol.conf)
                     file_message (the file name of the message to sign)
                     group (the name of the newsgroup)
                     message_id (the Message-ID of the message)
                     type (the type of the control article)
                     passphrase (if given, the passphrase of the private key)
+                    flag (if given, the additional flag(s) to pass to gpg)
         No return value
     """
     signatureWritten = False
 
     if passphrase:
-        os.system(config['PROGRAM_GPG'] + ' --emit-version --no-comments --no-escape-from-lines --no-throw-keyids --pgp2 --armor --detach-sign --local-user "='+ config['ID'] + '" --no-tty --passphrase "' + passphrase + '" --output ' + file_message + '.pgp ' + file_message + '.txt')
+        os.system(config['PROGRAM_GPG'] + ' --emit-version --no-comments --no-escape-from-lines --no-throw-keyids --armor --detach-sign --local-user "='+ config['ID'] + '" --no-tty --passphrase "' + passphrase + '" --output ' + file_message + '.pgp ' + flag + ' ' + file_message + '.txt')
     else:
-        os.system(config['PROGRAM_GPG'] + ' --emit-version --no-comments --no-escape-from-lines --no-throw-keyids --pgp2 --armor --detach-sign --local-user "='+ config['ID'] + '" --output ' + file_message + '.pgp ' + file_message + '.txt')
+        os.system(config['PROGRAM_GPG'] + ' --emit-version --no-comments --no-escape-from-lines --no-throw-keyids --armor --detach-sign --local-user "='+ config['ID'] + '" --output ' + file_message + '.pgp ' + flag + ' ' + file_message + '.txt')
     
     if not os.path.isfile(file_message + '.pgp'):
         print_error('Signature generation failed.')
@@ -369,8 +380,10 @@ def sign_message(config, file_message, group, message_id, type, passphrase=None)
     os.remove(file_message + '.pgp')
 
     print
-    print 'Do not worry if the program complains about detached signatures or MD5.'
-    print 'You can now post the file ' + file_message + '.sig using rnews or a similar tool.'
+    if flag:
+        print 'Do not worry if the program complains about detached signatures or MD5.'
+    print 'You can now post the file ' + file_message + '.sig using rnews'
+    print 'or a similar tool.'
     print
     #print 'Or you can also try to send it with IHAVE.  If it fails, it means that the article'
     #print 'has not been sent.  You will then have to manually use rnews or a similar program.'
@@ -380,6 +393,37 @@ def sign_message(config, file_message, group, message_id, type, passphrase=None)
     #    news_server.ihave(message_id, file_message + '.sig')
     #    news_server.quit()
     #    print 'The control article has just been sent!'
+
+
+def sign_message(config, file_message, group, message_id, type, passphrase=None):
+    """ Sign a control article.
+        Arguments:  config (the dictionary of parameters from signcontrol.conf)
+                    file_message (the file name of the message to sign)
+                    group (the name of the newsgroup)
+                    message_id (the Message-ID of the message)
+                    type (the type of the control article)
+                    passphrase (if given, the passphrase of the private key)
+        No return value
+    """
+    articles_to_generate = len(config['PGP2_COMPATIBILITY'])
+    i = 1
+    for (flag, suffix) in config['PGP2_COMPATIBILITY']:
+        if articles_to_generate > 1:
+            print
+            print 'Generation of control article ' + str(i) + '/' + str(articles_to_generate)
+            i += 1
+        if suffix:
+            additional_file = file(file_message + suffix + '.txt', 'wb')
+            additional_message_id = message_id.replace('@', suffix + '@', 1)
+            for line in file(file_message + '.txt', 'rb'):
+                if line == 'Message-ID: ' + message_id + '\n':
+                    line = 'Message-ID: ' + additional_message_id + '\n'
+                additional_file.write(line)
+            additional_file.close()
+            generate_signed_message(config, file_message + suffix, group, additional_message_id, type, passphrase, flag)
+            os.remove(file_message + suffix + '.txt')
+        else:
+            generate_signed_message(config, file_message, group, message_id, type, passphrase, flag)
 
 
 def generate_newgroup(groups, config, group=None, moderated=None, description=None, message=None, passphrase=None):
@@ -757,8 +801,8 @@ Getting started is as simple as:
 =item 1.
 
 Downloading and installing Python (L<http://www.python.org/>).  However,
-make sure to use Python 2.x because B<signcontrol.py> is not compatible
-yet with Python 3.x.
+make sure to use S<Python 2.x> because B<signcontrol.py> is not compatible
+yet with S<Python 3.x>.
 
 =item 2.
 
@@ -821,6 +865,28 @@ configuration file:
 
 The path to the GPG executable.  It is usually
 C<C:\Progra~1\GNU\GnuPG\gpg.exe> or C</usr/bin/gpg>.
+
+=item B<PGP2_COMPATIBILITY>
+
+Whether compatibility with MIT S<PGP 2.6.2> (or equivalent) should
+be kept.  Though this is now fairly obsolete, a few news servers still
+haven't been updated to be able to process newer and more secure signing
+algorithms.  Such servers do not recognize recent signing algorithms;
+however, current news servers may refuse to process messages signed
+with the insecure MD5 algorithm.
+
+Possible values are C<True>, C<False> or C<Only> (default is C<False>).
+
+When set to C<True>, B<signcontrol> will generate two control articles:
+one in a format compatible with MIT S<PGP 2.6.2> (or equivalent) and
+another with a newer and more secure format.  Sending these two control
+articles will then ensure a widest processing.
+
+When set to C<False>, B<signcontrol> will generate control articles in
+only a newer and more secure format.
+
+When set to C<Only>, B<signcontrol> will generate control articles in
+only a format compatible with MIT S<PGP 2.6.2> (or equivalent).
 
 =item B<ID>
 
