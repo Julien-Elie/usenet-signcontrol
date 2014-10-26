@@ -760,6 +760,8 @@ if __name__ == "__main__":
     choice = 0
     while choice != 5:
         groups = read_checkgroups(config['CHECKGROUPS_FILE'])
+        # Update time whenever we come back to the main menu.
+        TIME = time.localtime()
         choice = choice_menu()
         if choice == 1:
             generate_newgroup(groups, config)
