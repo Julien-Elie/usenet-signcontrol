@@ -789,15 +789,15 @@ B<python signcontrol.py>
 
 =head1 DESCRIPTION
 
-B<signcontrol.py> is a Python script aimed at Usenet hierarchy
-administrators so as to help them in maintaining the canonical lists
-of newsgroups in the hierarchies they administer.
+B<signcontrol.py> is a Python script aimed at helping Usenet hierarchy
+administrators in maintaining the canonical lists of newsgroups in the
+hierarchies they administer.
 
-This script is also useful to manage PGP keys:  generation, import,
-export, removal, and revokal.  It works on every platform on which
-Python and GnuPG are available (Windows, Linux, etc.).
+This script is also useful to manage PGP keys: generation, import, export,
+removal, and revokal.  It works on every platform on which Python and GnuPG
+are available (Windows, Linux, etc.).
 
-It enforces best practices regarding the syntax of Usenet control
+It also enforces best practices regarding the syntax of Usenet control
 articles.
 
 Getting started is as simple as:
@@ -806,23 +806,23 @@ Getting started is as simple as:
 
 =item 1.
 
-Downloading and installing Python (L<http://www.python.org/>).  However,
+Downloading and installing L<Python|http://www.python.org/>.  However,
 make sure to use S<Python 2.x> because B<signcontrol.py> is not compatible
 yet with S<Python 3.x>.
 
 =item 2.
 
-Downloading and installing GnuPG (L<http://www.gnupg.org/>).
+Downloading and installing L<GnuPG|http://www.gnupg.org/>.
 
 =item 3.
 
-Downloading both the B<signcontrol.py> script and its F<signcontrol.conf>
+Downloading both the F<signcontrol.py> program and its F<signcontrol.conf>
 configuration file.
 
 =item 4.
 
-Editing the F<signcontrol.conf> configuration file so that the parameters
-it defines properly fit your installation.
+Editing the F<signcontrol.conf> configuration file so that it properly fits
+your installation.
 
 =item 5.
 
@@ -830,35 +830,25 @@ Running C<python signcontrol.py>.
 
 =back
 
-
 =head1 SUPPORT
 
-The B<signcontrol.py> home page is:
+To report an issue or ask a question, please use the L<issue tracker on
+GitHub|https://github.com/Julien-Elie/usenet-signcontrol>.
 
-    http://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm
-
-It will always point to the current version of the script, and contains
-instructions written in French.
-
-For bug tracking, please use the issue tracker provided by Github:
-
-    https://github.com/Julien-Elie/usenet-signcontrol
-
+Instructions written in French are also available at
+L<http://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm>.
 
 =head1 SOURCE REPOSITORY
 
-B<signcontrol.py> is maintained using Git.  You can access the current
-source by cloning the repository at:
+B<signcontrol.py> is maintained using Git.  You can
+access the current source on the L<web interface of
+GitHub|https://github.com/Julien-Elie/usenet-signcontrol> or by cloning the
+repository at:
 
     https://github.com/Julien-Elie/usenet-signcontrol.git
 
-or access it via the web at:
-
-    https://github.com/Julien-Elie/usenet-signcontrol
-
-When contributing modifications, either patches or Git pull requests
-are welcome.
-
+When contributing modifications, either patches or Git pull requests are
+welcome.
 
 =head1 CONFIGURATION FILE
 
@@ -874,37 +864,35 @@ C<C:\Progra~1\GNU\GnuPG\gpg.exe> or C</usr/bin/gpg>.
 
 =item B<PGP2_COMPATIBILITY>
 
-Whether compatibility with MIT S<PGP 2.6.2> (or equivalent) should
-be kept.  Though this is now fairly obsolete, a few news servers still
-haven't been updated to be able to process newer and more secure signing
-algorithms.  Such servers do not recognize recent signing algorithms;
-however, current news servers may refuse to process messages signed
-with the insecure MD5 algorithm.
+Whether compatibility with MIT S<PGP 2.6.2> (or equivalent) should be kept.
+Though this is now fairly obsolete, a few news servers still haven't been
+updated to be able to process newer and more secure signing algorithms.
+Such servers do not recognize recent signing algorithms; however, current news
+servers may refuse to process messages signed with the insecure MD5 algorithm.
 
 Possible values are C<True>, C<False> or C<Only> (default is C<False>).
 
-When set to C<True>, B<signcontrol> will generate two control articles:
-one in a format compatible with MIT S<PGP 2.6.2> (or equivalent) and
-another with a newer and more secure format.  Sending these two control
-articles will then ensure a widest processing.
+When set to C<True>, B<signcontrol.py> will generate two control articles: one
+in a format compatible with MIT S<PGP 2.6.2> (or equivalent) and another with
+a newer and more secure format.  Sending these two control articles will then
+ensure a widest processing.
 
-When set to C<False>, B<signcontrol> will generate control articles in
-only a newer and more secure format.
+When set to C<False>, B<signcontrol.py> will only generate control articles in
+a newer and more secure format.
 
-When set to C<Only>, B<signcontrol> will generate control articles in
-only a format compatible with MIT S<PGP 2.6.2> (or equivalent).
+When set to C<Only>, B<signcontrol.py> will only generate control articles in
+a format compatible with MIT S<PGP 2.6.2> (or equivalent).
 
 =item B<ID>
 
-The ID of the PGP key used to sign control articles.  Note that if you
-do not already have a PGP key, it can be generated by B<signcontrol.py>.
-As for Usenet hierarchy management is concerned, the ID is usually a
-mere e-mail.
+The ID of the PGP key used to sign control articles.  Note that if you do
+not already have a PGP key, it can be generated by B<signcontrol.py>.  As for
+Usenet hierarchy management is concerned, the ID is usually a mere e-mail.
 
 =item B<MAIL>
 
-The e-mail from which control articles are sent.  It is usually the ID
-of the PGP key used to sign them.
+The e-mail from which control articles are sent.  It is usually the ID of the
+PGP key used to sign them.
 
 =item B<HOST>
 
@@ -913,46 +901,43 @@ articles generated.  It is usually the name of a news server.
 
 =item B<ADMIN_GROUP>
 
-An existing newsgroup of the hierarchy (where checkgroups control
-articles will be fed).  If an administrative newsgroup exists, put it.
-Otherwise, any other newsgroup of the hierarchy will be fine.
+An existing newsgroup of the hierarchy (where checkgroups control articles
+will be fed).  If an administrative newsgroup exists, put it.  Otherwise, any
+other newsgroup of the hierarchy will be fine.
 
 =item B<NAME>
 
-The name which appears in the From: header field.  You should only use
+The name which appears in the From header field.  You should only use
 ASCII characters.  Otherwise, you have to MIME-encode it (for instance:
 C<=?ISO-8859-15?Q?Julien_=C9LIE?=>).
 
 =item B<CHECKGROUPS_SCOPE>
 
-The scope of the hierarchy according to Section
-5.2.3 of RFC 5537 (also known as USEPRO, available at
-L<https://tools.ietf.org/html/rfc5537#section-5.2.3>).  For instance:
-C<fr> (for fr.*), C<de !de.alt> (for de.* excepting de.alt.*) or
-C<de.alt> (for de.alt.*).
+The scope of the hierarchy according to L<< S<Section 5.2.3> of S<RFC
+5537>|https://tools.ietf.org/html/rfc5537#section-5.2.3 >>.  For instance:
+C<fr> (for fr.*), C<de !de.alt> (for de.* excepting de.alt.*) or C<de.alt>
+(for de.alt.*).
 
 =item B<URL>
 
-The URL where the public PGP key can be found.  If you do not have any,
-leave C<ftp://ftp.isc.org/pub/pgpcontrol/README>.  If you want to add
-more URLs (like the home page of the hierarchy), use a multi-line text
-where each line, except for the first, begins with a tabulation.
+The URL where the public PGP key can be found.  If you do not have any, leave
+C<ftp://ftp.isc.org/pub/pgpcontrol/README>.  If you want to add more URLs
+(like the home page of the hierarchy), use a multi-line text where each line,
+except for the first, begins with a tabulation.
 
 =item B<NEWGROUP_MESSAGE_MODERATED>, B<NEWGROUP_MESSAGE_UNMODERATED>,
 B<RMGROUP_MESSAGE>
 
 The message which will be written in the corresponding control article.
-All occurrences of C<$GROUP$> will be replaced by the name of the
-newsgroup.
+All occurrences of C<$GROUP$> will be replaced by the name of the newsgroup.
 
 =item B<PRIVATE_HIERARCHY>
 
-Whether the hierarchy is public or private.  If it is private (that is
-to say if it is intended to remain in a local server with private access
-and if it is not fed to other Usenet news servers), the value should
-be C<True>, so that checkgroups control articles are not crossposted
-to the news.admin.hierarchies newsgroup.  Possible values are C<True>
-or C<False> (default is C<False>).
+Whether the hierarchy is public or private.  If it is private (that is to say
+if it is intended to remain in a local server with private access and if it
+is not fed to other Usenet news servers), the value should be C<True>, so that
+checkgroups control articles are not crossposted to the news.admin.hierarchies
+newsgroup.  Possible values are C<True> or C<False> (default is C<False>).
 
 =item B<CHECKGROUPS_FILE>
 
@@ -970,16 +955,13 @@ Here are some resources that can be useful to be aware of:
 
 =over 4
 
-=item Usenet Hierarchy Administration FAQ
-
+=item Usenet Hierarchy Administration FAQ:
 L<http://www.eyrie.org/~eagle/faqs/usenet-hier.html>
 
-=item Usenet hierarchy information
-
+=item Usenet hierarchy information:
 L<http://usenet.trigofacile.com/hierarchies/>
 
-=item Hosting service for hierarchy administrators
-
+=item Hosting service for hierarchy administrators:
 L<http://www.news-admin.org/>
 
 =back
@@ -1011,8 +993,8 @@ SOFTWARE.
 
 
 
-For any copyright range specified by files in this package as "YYYY-ZZZZ",
-the range specifies every single year in that closed interval.
+For any copyright range specified by files in this package as "YYYY-ZZZZ", the
+range specifies every single year in that closed interval.
 
 =head1 HISTORY
 
