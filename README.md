@@ -1,6 +1,6 @@
 # usenet-signcontrol
 
-> Copyright (c) 2007-2009, 2011, 2016, 2019-2020, 2023 Julien ÉLIE 
+> Copyright (c) 2007-2009, 2011, 2014, 2023 Julien ÉLIE
 
 This software is distributed under the MIT license.  Please see the
 [License](#license) section below for more information.
