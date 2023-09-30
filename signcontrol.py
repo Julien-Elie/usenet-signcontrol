@@ -777,6 +777,8 @@ if __name__ == "__main__":
 
 # Embedded documentation.
 POD = """
+=encoding utf8
+
 =head1 NAME
 
 signcontrol.py - Generate PGP-signed control articles for Usenet hierarchies
