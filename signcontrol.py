@@ -984,10 +984,10 @@ L<http://www.news-admin.org/>
 
 =head1 LICENSE
 
-The B<signcontrol.py> package as a whole is covered by the following
+The B<usenet-signcontrol> package as a whole is covered by the following
 copyright statement and license:
 
-Copyright (c) 2007, 2008, 2009, 2011, 2014 Julien ÉLIE
+Copyright (c) 2007-2009, 2011, 2014, 2023 Julien ÉLIE
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -1006,6 +1006,11 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+
+For any copyright range specified by files in this package as "YYYY-ZZZZ",
+the range specifies every single year in that closed interval.
 
 =head1 HISTORY
 
