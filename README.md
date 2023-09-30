@@ -20,10 +20,10 @@ articles.
 
 Getting started is as simple as:
 
-1. Downloading and installing [Python](http://www.python.org/).  However,
+1. Downloading and installing [Python](https://www.python.org/).  However,
 make sure to use Python 2.x because **signcontrol.py** is not compatible
 yet with Python 3.x.
-2. Downloading and installing [GnuPG](http://www.gnupg.org/).
+2. Downloading and installing [GnuPG](https://www.gnupg.org/).
 3. Downloading both the `signcontrol.py` program and its `signcontrol.conf`
 configuration file.
 4. Editing the `signcontrol.conf` configuration file so that it properly fits
@@ -36,7 +36,7 @@ To report an issue or ask a question, please use the [issue tracker on
 GitHub](https://github.com/Julien-Elie/usenet-signcontrol).
 
 Instructions written in French are also available at
-[http://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm](http://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm).
+[https://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm](https://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm).
 
 ## Source Repository
 
@@ -111,16 +111,16 @@ ASCII characters.  Otherwise, you have to MIME-encode it (for instance:
 
 - **CHECKGROUPS\_SCOPE**
 
-The scope of the hierarchy according to [Section 5.2.3 of RFC 5537](https://tools.ietf.org/html/rfc5537#section-5.2.3).  For instance:
-`fr` (for fr.\*), `de !de.alt` (for de.\* excepting de.alt.\*) or `de.alt`
-(for de.alt.\*).
+The scope of the hierarchy according to [Section 5.2.3 of RFC 5537](https://datatracker.ietf.org/doc/html/rfc5537#section-5.2.3).
+For instance: `fr` (for fr.\*), `de !de.alt` (for de.\* excepting de.alt.\*)
+or `de.alt` (for de.alt.\*).
 
 - **URL**
 
 The URL where the public PGP key can be found.  If you do not have any, leave
-`ftp://ftp.isc.org/pub/pgpcontrol/README`.  If you want to add more URLs
-(like the home page of the hierarchy), use a multi-line text where each line,
-except for the first, begins with a tabulation.
+`https://ftp.isc.org/pub/pgpcontrol/README.html`.  If you want to add more
+URLs (like the home page of the hierarchy), use a multi-line text where each
+line, except for the first, begins with a tabulation.
 
 - **NEWGROUP\_MESSAGE\_MODERATED**, **NEWGROUP\_MESSAGE\_UNMODERATED**,
 **RMGROUP\_MESSAGE**
@@ -149,7 +149,7 @@ The encoding of control articles.  The default value is `ISO-8859-1`.
 Here are some resources that can be useful to be aware of:
 
 - Usenet Hierarchy Administration FAQ:
-[http://www.eyrie.org/~eagle/faqs/usenet-hier.html](http://www.eyrie.org/~eagle/faqs/usenet-hier.html)
+[https://www.eyrie.org/~eagle/faqs/usenet-hier.html](https://www.eyrie.org/~eagle/faqs/usenet-hier.html)
 - Usenet hierarchy information:
 [http://usenet.trigofacile.com/hierarchies/](http://usenet.trigofacile.com/hierarchies/)
 - Hosting service for hierarchy administrators:

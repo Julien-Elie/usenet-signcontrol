@@ -16,16 +16,16 @@
 # welcome.
 #
 # Contact:
-#   <http://www.trigofacile.com/maths/contact/index.htm>
+#   <https://www.trigofacile.com/maths/contact/index.htm>
 # Issue tracker:
 #   <https://github.com/Julien-Elie/usenet-signcontrol/issues>
 #
 # Upstream web site:
-#   <http://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm>
+#   <https://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm>
 # Github repository:
 #   <https://github.com/Julien-Elie/usenet-signcontrol>
 # Please also read:
-#   <http://www.eyrie.org/~eagle/faqs/usenet-hier.html>
+#   <https://www.eyrie.org/~eagle/faqs/usenet-hier.html>
 #
 # History:
 #
@@ -357,7 +357,7 @@ def generate_signed_message(config, file_message, group, message_id, type, passp
                     result.write('Newsgroups: ' + group + '\n')
                 result.write('Path: not-for-mail\n')
                 result.write('X-Info: ' + config['URL'] + '\n')
-                result.write('\tftp://ftp.isc.org/pub/pgpcontrol/README.html\n')
+                result.write('\thttps://ftp.isc.org/pub/pgpcontrol/README.html\n')
                 result.write('MIME-Version: 1.0\n')
                 if type == 'newgroup':
                     result.write('Content-Type: multipart/mixed; boundary="signcontrol"\n')
@@ -755,7 +755,7 @@ if __name__ == "__main__":
     """
     config = read_configuration(CONFIGURATION_FILE)
     if not os.path.isfile(config['PROGRAM_GPG']):
-        print 'You must install GnuPG <http://www.gnupg.org/> and edit this script to put'
+        print 'You must install GnuPG <https://www.gnupg.org/> and edit this script to put'
         print 'the path to the gpg binary.'
         raw_input('Please install it before using this script.')
         sys.exit(2)
@@ -806,13 +806,13 @@ Getting started is as simple as:
 
 =item 1.
 
-Downloading and installing L<Python|http://www.python.org/>.  However,
+Downloading and installing L<Python|https://www.python.org/>.  However,
 make sure to use S<Python 2.x> because B<signcontrol.py> is not compatible
 yet with S<Python 3.x>.
 
 =item 2.
 
-Downloading and installing L<GnuPG|http://www.gnupg.org/>.
+Downloading and installing L<GnuPG|https://www.gnupg.org/>.
 
 =item 3.
 
@@ -836,7 +836,7 @@ To report an issue or ask a question, please use the L<issue tracker on
 GitHub|https://github.com/Julien-Elie/usenet-signcontrol>.
 
 Instructions written in French are also available at
-L<http://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm>.
+L<https://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm>.
 
 =head1 SOURCE REPOSITORY
 
@@ -914,16 +914,16 @@ C<=?ISO-8859-15?Q?Julien_=C9LIE?=>).
 =item B<CHECKGROUPS_SCOPE>
 
 The scope of the hierarchy according to L<< S<Section 5.2.3> of S<RFC
-5537>|https://tools.ietf.org/html/rfc5537#section-5.2.3 >>.  For instance:
-C<fr> (for fr.*), C<de !de.alt> (for de.* excepting de.alt.*) or C<de.alt>
-(for de.alt.*).
+5537>|https://datatracker.ietf.org/doc/html/rfc5537#section-5.2.3 >>.
+For instance: C<fr> (for fr.*), C<de !de.alt> (for de.* excepting de.alt.*)
+or C<de.alt> (for de.alt.*).
 
 =item B<URL>
 
 The URL where the public PGP key can be found.  If you do not have any, leave
-C<ftp://ftp.isc.org/pub/pgpcontrol/README>.  If you want to add more URLs
-(like the home page of the hierarchy), use a multi-line text where each line,
-except for the first, begins with a tabulation.
+C<https://ftp.isc.org/pub/pgpcontrol/README.html>.  If you want to add more
+URLs (like the home page of the hierarchy), use a multi-line text where each
+line, except for the first, begins with a tabulation.
 
 =item B<NEWGROUP_MESSAGE_MODERATED>, B<NEWGROUP_MESSAGE_UNMODERATED>,
 B<RMGROUP_MESSAGE>
@@ -956,7 +956,7 @@ Here are some resources that can be useful to be aware of:
 =over 4
 
 =item Usenet Hierarchy Administration FAQ:
-L<http://www.eyrie.org/~eagle/faqs/usenet-hier.html>
+L<https://www.eyrie.org/~eagle/faqs/usenet-hier.html>
 
 =item Usenet hierarchy information:
 L<http://usenet.trigofacile.com/hierarchies/>
