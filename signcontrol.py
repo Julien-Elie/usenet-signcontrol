@@ -859,7 +859,7 @@ configuration file:
 
 =item B<PROGRAM_GPG>
 
-The path to the GPG executable.  It is usually
+The path to the required GPG executable.  It is usually
 C<C:\Progra~1\GNU\GnuPG\gpg.exe> or C</usr/bin/gpg>.
 
 =item B<PGP2_COMPATIBILITY>
@@ -896,8 +896,8 @@ PGP key used to sign them.
 
 =item B<HOST>
 
-The host which appears in the second part of the Message-ID of control
-articles generated.  It is usually the name of a news server.
+The host which appears in the second part of the Message-ID of generated
+control articles.  It is usually the name of a news server.
 
 =item B<ADMIN_GROUP>
 

@@ -57,7 +57,7 @@ configuration file:
 
 - **PROGRAM\_GPG**
 
-The path to the GPG executable.  It is usually
+The path to the required GPG executable.  It is usually
 `C:\Progra~1\GNU\GnuPG\gpg.exe` or `/usr/bin/gpg`.
 
 - **PGP2\_COMPATIBILITY**
@@ -94,8 +94,8 @@ PGP key used to sign them.
 
 - **HOST**
 
-The host which appears in the second part of the Message-ID of control
-articles generated.  It is usually the name of a news server.
+The host which appears in the second part of the Message-ID of generated
+control articles.  It is usually the name of a news server.
 
 - **ADMIN\_GROUP**
 
