@@ -828,6 +828,10 @@ your installation.
 
 Running C<python signcontrol.py>.
 
+If you intend to generate several control articles during a single run of this
+script, you can make use of B<gpg-agent> so as to type your passphrase only
+once.  Running C<gpg-agent --daemon signcontrol.py> should work.
+
 =back
 
 =head1 SUPPORT
@@ -1002,7 +1006,7 @@ B<signcontrol.py> was written by Julien ÉLIE.
 
 =head1 SEE ALSO
 
-gpg(1).
+gpg(1), gpg-agent(1).
 
 =cut
 """

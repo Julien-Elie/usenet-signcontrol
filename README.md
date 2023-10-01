@@ -30,6 +30,10 @@ configuration file.
 your installation.
 5. Running `python signcontrol.py`.
 
+If you intend to generate several control articles during a single run of this
+script, you can make use of **gpg-agent** so as to type your passphrase only
+once.  Running `gpg-agent --daemon signcontrol.py` should work.
+
 ## Support
 
 To report an issue or ask a question, please use the [issue tracker on
