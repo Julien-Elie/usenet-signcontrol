@@ -1027,7 +1027,7 @@ signcontrol.conf.""")
                 "Please enter the uid of the secret key to revoke: "
             )
             os.system(
-                config["PROGRAM_GPG"] + ' --gen-revoke "=' + key_name + "'"
+                config["PROGRAM_GPG"] + ' --gen-revoke "=' + key_name + '"'
             )
         print("")
 
