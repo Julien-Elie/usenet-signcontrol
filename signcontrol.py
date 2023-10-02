@@ -959,8 +959,8 @@ def manage_keys(config):
 Please put the e-mail address from which you will send control articles
 in the key ID (the real name field).  And leave the other fields blank,
 for better compatibility with Usenet software.
-Choose a 2048-bit RSA key which never expires.
-You should also provide a passphrase, for security reasons.
+Choose a 3072-bit or 4096-bit RSA key which *never expires*.
+You should also provide a strong passphrase, for security reasons.
 There is no need to edit the key after it has been generated.
 
 Please note that the key generation may not finish if it is launched
@@ -968,8 +968,11 @@ on a remote server, owing to a lack of enough entropy.  Use your own
 computer instead and import the key on the remote one afterwards.
 -----------------------------------------------------------------------
 """)
+            # --gen-key should be used instead of --full-generate-key for
+            # GnuPG versions prior to 2.1.17.
             os.system(
-                config["PROGRAM_GPG"] + " --gen-key --allow-freeform-uid"
+                config["PROGRAM_GPG"]
+                + " --full-generate-key --allow-freeform-uid"
             )
             print("""
 After having generated these keys, you should export your PUBLIC key
