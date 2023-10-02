@@ -148,7 +148,9 @@ The file which contains the current checkgroups.
 
 - **ENCODING**
 
-The encoding of control articles.  The default value is `ISO-8859-1`.
+The encoding of control articles.  The default value is `UTF-8`, which is the
+charset that SHOULD be used for non-ASCII characters, per [Section 4.2
+of RFC 5537](https://datatracker.ietf.org/doc/html/rfc5537#section-4.2).
 
 ## Useful Resources
 
