@@ -1116,6 +1116,10 @@ If you intend to generate several control articles during a single run of this
 script, you can make use of B<gpg-agent> so as to type your passphrase only
 once.  Running C<gpg-agent --daemon signcontrol.py> should work.
 
+If you're running B<signcontrol.py> through a remote terminal, you may have
+to execute C<chown user $(tty)> as I<root> before running B<signcontrol.py>
+as I<user> to allow the input of a passphrase.  (B<gpg> will otherwise fail.)
+
 =back
 
 =head1 SUPPORT

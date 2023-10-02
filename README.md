@@ -34,6 +34,10 @@ If you intend to generate several control articles during a single run of this
 script, you can make use of **gpg-agent** so as to type your passphrase only
 once.  Running `gpg-agent --daemon signcontrol.py` should work.
 
+If you're running **signcontrol.py** through a remote terminal, you may have
+to execute `chown user $(tty)` as _root_ before running **signcontrol.py**
+as _user_ to allow the input of a passphrase.  (**gpg** will otherwise fail.)
+
 ## Support
 
 To report an issue or ask a question, please use the [issue tracker on
