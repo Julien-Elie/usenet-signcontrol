@@ -36,6 +36,10 @@ If you're running **signcontrol.py** through a remote terminal, you may have
 to execute `chown user $(tty)` as _root_ before running **signcontrol.py**
 as _user_ to allow the input of a passphrase.  (**gpg** will otherwise fail.)
 
+For optimal results, in case you'll use non-ASCII characters in control
+messages and descriptions, please use UTF-8 for the encoding of your terminal
+input and the checkgroups file.
+
 ## Support
 
 To report an issue or ask a question, please use the [issue tracker on
@@ -146,13 +150,15 @@ newsgroup.  Possible values are `True` or `False` (default is `False`).
 
 - **CHECKGROUPS\_FILE**
 
-The file which contains the current checkgroups.
+The file which contains the current checkgroups.  Make sure it is correctly
+encoded in UTF-8 (if of course it contains non-ASCII characters).
 
 - **ENCODING**
 
 The encoding of control articles.  The default value is `UTF-8`, which is the
 charset that SHOULD be used for non-ASCII characters, per [Section 4.2
 of RFC 5537](https://datatracker.ietf.org/doc/html/rfc5537#section-4.2).
+Make sure your terminal is configured for UTF-8 input too!
 
 ## Useful Resources
 

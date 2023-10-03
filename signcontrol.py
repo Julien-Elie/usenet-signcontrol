@@ -1121,6 +1121,10 @@ If you're running B<signcontrol.py> through a remote terminal, you may have
 to execute C<chown user $(tty)> as I<root> before running B<signcontrol.py>
 as I<user> to allow the input of a passphrase.  (B<gpg> will otherwise fail.)
 
+For optimal results, in case you'll use non-ASCII characters in control
+messages and descriptions, please use UTF-8 for the encoding of your terminal
+input and the checkgroups file.
+
 =back
 
 =head1 SUPPORT
@@ -1236,13 +1240,15 @@ newsgroup.  Possible values are C<True> or C<False> (default is C<False>).
 
 =item B<CHECKGROUPS_FILE>
 
-The file which contains the current checkgroups.
+The file which contains the current checkgroups.  Make sure it is correctly
+encoded in UTF-8 (if of course it contains non-ASCII characters).
 
 =item B<ENCODING>
 
 The encoding of control articles.  The default value is C<UTF-8>, which is the
 charset that SHOULD be used for non-ASCII characters, per L<< S<Section 4.2>
 of S<RFC 5537>|https://datatracker.ietf.org/doc/html/rfc5537#section-4.2 >>.
+Make sure your terminal is configured for UTF-8 input too!
 
 =back
 
