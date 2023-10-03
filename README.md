@@ -20,9 +20,7 @@ articles.
 
 Getting started is as simple as:
 
-1. Downloading and installing [Python](https://www.python.org/).  However,
-make sure to use Python 2.x because **signcontrol.py** is not compatible
-yet with Python 3.x.
+1. Downloading and installing [Python](https://www.python.org/).
 2. Downloading and installing [GnuPG](https://www.gnupg.org/).
 3. Downloading both the `signcontrol.py` program and its `signcontrol.conf`
 configuration file.

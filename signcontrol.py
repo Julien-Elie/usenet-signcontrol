@@ -1093,9 +1093,7 @@ Getting started is as simple as:
 
 =item 1.
 
-Downloading and installing L<Python|https://www.python.org/>.  However,
-make sure to use S<Python 2.x> because B<signcontrol.py> is not compatible
-yet with S<Python 3.x>.
+Downloading and installing L<Python|https://www.python.org/>.
 
 =item 2.
 
