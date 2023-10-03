@@ -164,6 +164,9 @@ Make sure your terminal is configured for UTF-8 input too!
 
 Here are some resources that can be useful to be aware of:
 
+- Discussions about Usenet hierarchy administration in general take place
+in the `news.admin.hierarchies` newsgroup; do not hesitate to participate in
+this newsgroup!
 - Usenet Hierarchy Administration FAQ:
 [https://www.eyrie.org/~eagle/faqs/usenet-hier.html](https://www.eyrie.org/~eagle/faqs/usenet-hier.html)
 - Usenet hierarchy information:

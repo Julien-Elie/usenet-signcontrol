@@ -1258,6 +1258,10 @@ Here are some resources that can be useful to be aware of:
 
 =over 4
 
+=item Discussions about Usenet hierarchy administration in general take place
+in the C<news.admin.hierarchies> newsgroup; do not hesitate to participate in
+this newsgroup!
+
 =item Usenet Hierarchy Administration FAQ:
 L<https://www.eyrie.org/~eagle/faqs/usenet-hier.html>
 
