@@ -1,95 +1,105 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
-# Script to help in managing Usenet hierarchies.  It generates control
-# articles and handles PGP keys (generation and management).
+# Script to help in managing Usenet hierarchies.  It generates control articles
+# and handles PGP keys (generation and management).
 #
 # signcontrol.py -- v. 1.4.0 -- 2014/10/26
 #
-# Written and maintained by Julien ÉLIE.
+# Original version written in 2007, and maintained since then by Julien ÉLIE.
 #
-# This script is distributed under the MIT License.  Please see the LICENSE
-# section below for more information.
+# Github repository to view the latest source code and report possible issues:
+#   https://github.com/Julien-Elie/usenet-signcontrol/
 #
-# Feel free to use it.  I would be glad to know whether you find it useful for
-# your hierarchy.  Any bug reports, bug fixes, and improvements are very much
-# welcome.
+# Please also read the Usenet hierarchy administration FAQ:
+#   https://www.eyrie.org/~eagle/faqs/usenet-hier.html
 #
-# Contact:
-#   <https://www.trigofacile.com/maths/contact/index.htm>
-# Issue tracker:
-#   <https://github.com/Julien-Elie/usenet-signcontrol/issues>
+# SPDX-License-Identifier: MIT
 #
-# Upstream web site:
-#   <https://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm>
-# Github repository:
-#   <https://github.com/Julien-Elie/usenet-signcontrol>
-# Please also read:
-#   <https://www.eyrie.org/~eagle/faqs/usenet-hier.html>
+# Feel free to use this script.  I would be glad to know whether you find it
+# useful for your hierarchy.  Any bug reports, bug fixes, and improvements are
+# very much welcome.
+# Discussions about Usenet hierarchy administration in general take place in
+# the news.admin.hierarchies newsgroup; do not hesitate to participate in this
+# newsgroup!
+#
 #
 # History:
 #
-# v. 1.4.0:  2014/10/26 -- add the --no-tty flag to gpg when --passphrase is
-#            also used.  Otherwise, an error occurs when running signcontrol
-#            from cron.  Thanks to Matija Nalis for the bug report.
-#            - Add the PGP2_COMPATIBILITY parameter to generate control
-#            articles compatible with MIT PGP 2.6.2 (or equivalent).
-#            - When managing PGP keys, their full uid is now expected, instead
-#            of only a subpart.
-#            - Listing secret keys now also shows their fingerprint.
-#            - Improve documentation, along with the creation of a Git
+# v. 1.4.0: 2014/10/26
+#           - Add the --no-tty flag to gpg when --passphrase is also used.
+#             Otherwise, an error occurs when running signcontrol.py from cron.
+#             Thanks to Matija Nalis for the bug report.
+#           - Add the PGP2_COMPATIBILITY parameter to generate control articles
+#             compatible with MIT PGP 2.6.2 (or equivalent).
+#           - When managing PGP keys, their full uid is now expected, instead
+#             of only a subpart.
+#           - Listing secret keys now also shows their fingerprint.
+#           - Improve documentation, along with the creation of a Git
 #             repository on Github.
 #
-# v. 1.3.3:  2011/07/11 -- automatically generate an Injection-Date: header
-#            field, and sign it.  It will prevent control articles from being
-#            maliciously reinjected into Usenet, and replayed by news servers
-#            compliant with RFC 5537 (that is to say without cutoff on the
-#            Date: header field when an Injection-Date: header field exists).
+# v. 1.3.3: 2011/07/11
+#           - Automatically generate an Injection-Date header field, and sign
+#             it.  This will prevent control articles from being maliciously
+#             reinjected into Usenet, and replayed by news servers compliant
+#             with RFC 5537 (that is to say without cutoff on the Date header
+#             field when an Injection-Date header field exists).
 #
-# v. 1.3.2:  2009/12/23 -- use local time instead of UTC (thanks to Adam
-#            H. Kerman for the suggestion).
-#            - Add flags to gpg when called:  --emit-version, --no-comments,
-#            --no-escape-from-lines and --no-throw-keyids.  Otherwise, the
-#            signature may not be valid (thanks to Robert Spier for the
-#            bug report).
+# v. 1.3.2: 2009/12/23
+#           - Use local time instead of UTC (thanks to Adam H. Kerman for the
+#             suggestion).
+#           - Add flags to gpg when called: --emit-version, --no-comments,
+#             --no-escape-from-lines and --no-throw-keyids.  Otherwise, the
+#             signature may not be valid (thanks to Robert Spier for the bug
+#             report).
 #
-# v. 1.3.1:  2009/12/20 -- compliance with RFC 5322 (Internet Message Format):
-#            use "-0000" instead of "+0000" to indicate a time zone at Universal
-#            Time ("-0000" means that the time is generated on a system that
-#            may be in a local time zone other than Universal Time); also remove
-#            the Sender: header field.
-#            - When a line in the body of a control article started with
-#            "Sender", a bug in signcontrol prevented the article from being
-#            properly signed.
+# v. 1.3.1: 2009/12/20
+#           - Compliance with RFC 5322 (Internet Message Format): use "-0000"
+#             instead of "+0000" to indicate a time zone at Universal Time
+#             ("-0000" means that the time is generated on a system that may be
+#             in a local time zone other than Universal Time); also remove the
+#             Sender header field.
+#           - When a line in the body of a control article started with
+#             "Sender", a bug in signcontrol.py prevented the article from
+#             being properly signed.
 #
-# v. 1.3.0:  2009/07/28 -- remove the charset for a multipart/mixed block
-#            in newgroup articles, change the default serial number from 0 to 1
-#            in checkgroups articles, allow the user to interactively modify
-#            his message (thanks to Matija Nalis for the idea).
+# v. 1.3.0: 2009/07/28
+#           - Remove the charset for a multipart/mixed block in newgroup
+#             control articles.
+#           - Change the default serial number from 0 to 1 in checkgroups
+#             control articles.
+#           - Allow the user to interactively modify his message (thanks to
+#             Matija Nalis for the idea).
 #
-# v. 1.2.1:  2008/12/07 -- ask for confirmation when "(Moderated)" is misplaced
-#            in a newsgroup description.
+# v. 1.2.1: 2008/12/07
+#           - Ask for confirmation when "(Moderated)" is misplaced in a
+#             newsgroup description.
 #
-# v. 1.2.0:  2008/11/17 -- support for USEPRO:  checkgroups scope, checkgroups
-#            serial numbers and accurate Content-Type: header fields.
+# v. 1.2.0: 2008/11/17
+#           - Support for RFC 5537: checkgroups scope, checkgroups serial
+#             numbers and accurate Content-Type header fields.
 #
-# v. 1.1.0:  2007/05/09 -- fix the newgroups line when creating a newsgroup,
-#            use a separate config file, possibility to import signcontrol from
-#            other scripts and use its functions.
+# v. 1.1.0: 2007/05/09
+#           - Fix the newgroups line when creating a newsgroup.
+#           - Use a separate config file.
+#           - Add the possibility to import signcontrol.py from other scripts
+#             and use its functions.
 #
-# v. 1.0.0:  2007/05/01 -- initial release.
+# v. 1.0.0: 2007/05/01
+#           - Initial release.
 
 
-# THERE IS NOTHING USEFUL TO PARAMETER IN THIS FILE.
-# The file "signcontrol.conf" contains all your parameters
-# and it will be parsed.
+# THERE IS NOTHING USEFUL TO PARAMETERIZE IN THIS FILE.
+# The file "signcontrol.conf" contains all your parameters.  It will be parsed
+# when running this script.
 CONFIGURATION_FILE = "signcontrol.conf"
 
 import os
 import re
-import sys, traceback
-import time
 import shlex
+import sys
+import time
+import traceback
 
 # Current time.
 TIME = time.localtime()
@@ -136,9 +146,9 @@ def print_error(error):
 
 
 def pretty_time(localtime):
-    """Return the Date: header field.
+    """Return the Date header field.
     Argument: localtime (a time value, representing local time)
-    Return value: a string suitable to be used in a Date: header field
+    Return value: a string suitable to be used in a Date header field
     """
     # As "%z" does not work on every platform with strftime(), we compute
     # the time zone offset.
@@ -231,7 +241,7 @@ def read_configuration(file):
             print("The parameter " + token + " is missing.")
             str_input(
                 "Please download the latest version of the configuration file"
-                " and parameter it before using this script."
+                " and parameterize it before using this script."
             )
             sys.exit(2)
     return config
@@ -259,7 +269,7 @@ def read_checkgroups(path):
             group, description = line2.split("\t")
             groups[group] = description
         except:
-            print_error("The current checkgroups is badly formed.")
+            print_error("The current checkgroups is incorrectly formatted.")
             print("The offending line is:")
             print(line)
             print("")
@@ -399,11 +409,11 @@ def generate_signed_message(
             continue
 
         if not line.startswith("X-Signed-Headers"):
-            # From: is the last signed header field.
+            # From is the last signed header field.
             if not line.startswith("From"):
                 result.write(line)
             else:
-                # Rewrite the From: line exactly as we already wrote it.
+                # Rewrite the From line exactly as we already wrote it.
                 result.write(
                     "From: " + config["NAME"] + " <" + config["MAIL"] + ">\n"
                 )
@@ -432,7 +442,7 @@ def generate_signed_message(
                         + config["ENCODING"]
                         + "\n"
                     )
-                else:  # if type == 'rmgroup':
+                else:  # rmgroup
                     result.write(
                         "Content-Type: text/plain; charset="
                         + config["ENCODING"]
@@ -586,24 +596,18 @@ def generate_newgroup(
                 )
 
     if group in groups:
-        print("")
-        print("The newsgroup " + group + " already exists.")
-        print(
-            "These new settings (status and description) will override the"
-            " current ones."
-        )
-        print("")
+        print("""
+The newsgroup %s already exists.
+These new settings (status and description) will override the current ones.
+""" % group)
 
     if moderated is None:
         if str_input("Is " + group + " a moderated newsgroup? (y/n) ") == "y":
             moderated = True
-            print("")
-            print(
-                'There is no need to add " (Moderated)" at the very end of the'
-                " description."
-            )
-            print("It will be automatically added, if not already present.")
-            print("")
+            print("""
+There is no need to add " (Moderated)" at the very end of the description.
+It will be automatically added, if not already present.
+""")
         else:
             moderated = False
 
