@@ -104,6 +104,15 @@ import traceback
 # Current time.
 TIME = time.localtime()
 
+# Enable colours on Windows.
+os.system("")
+
+RED = "\033[31m"
+GREEN = "\033[32m"
+YELLOW = "\033[33m"
+CYAN = "\033[36m"
+END = "\033[0m"
+
 
 def str_input(string):
     """Get a value from the user, using input() in Python 3 or raw_input() in
@@ -128,7 +137,7 @@ def treat_exceptions(type, value, stacktrace):
     print("-----------------------------------------------------------")
     print("\n".join(traceback.format_exception(type, value, stacktrace)))
     print("-----------------------------------------------------------")
-    str_input("An error has just occurred.")
+    str_input(RED + "An error has just occurred." + END)
     sys.exit(2)
 
 
@@ -141,7 +150,7 @@ def print_error(error):
     No return value
     """
     print("")
-    print("--> " + error + " <--")
+    print("--> " + RED + error + END + " <--")
     print("")
 
 
@@ -204,7 +213,7 @@ def read_configuration(file):
     ]
 
     if not os.path.isfile(file):
-        print("The configuration file is absent.")
+        print(RED + "The configuration file is absent." + END)
         str_input("Please install it before using this script.")
         sys.exit(2)
 
@@ -238,7 +247,7 @@ def read_configuration(file):
     for token in TOKENS:
         if token not in config:
             print("You must update the configuration file.")
-            print("The parameter " + token + " is missing.")
+            print(RED + "The parameter " + token + " is missing." + END)
             str_input(
                 "Please download the latest version of the configuration file"
                 " and parameterize it before using this script."
@@ -256,7 +265,7 @@ def read_checkgroups(path):
     # Usually for the first use of the script.
     if not os.path.isfile(path):
         print("No checkgroups file found.")
-        print("Creating an empty checkgroups file...")
+        print(GREEN + "Creating an empty checkgroups file..." + END)
         write_checkgroups(dict(), path)
 
     groups = dict()
@@ -269,7 +278,9 @@ def read_checkgroups(path):
             group, description = line2.split("\t")
             groups[group] = description
         except:
-            print_error("The current checkgroups is incorrectly formatted.")
+            print_error(
+                RED + "The current checkgroups is incorrectly formatted." + END
+            )
             print("The offending line is:")
             print(line)
             print("")
@@ -295,7 +306,7 @@ def write_checkgroups(groups, path):
         else:
             checkgroups_file.write(key + "\t" + groups[key] + "\n")
     checkgroups_file.close()
-    print("Checkgroups file written.")
+    print(GREEN + "Checkgroups file written." + END)
     print("")
 
 
@@ -399,7 +410,7 @@ def generate_signed_message(
 
     if not os.path.isfile(file_message + ".pgp"):
         print_error("Signature generation failed.")
-        print("Please verify the availability of the secret key.")
+        print(RED + "Please verify the availability of the secret key." + END)
         return
 
     result = open(file_message + ".sig", "w")
@@ -480,8 +491,10 @@ def generate_signed_message(
     print("")
     if flag:
         print(
-            "Do not worry if the program complains about detached signatures"
+            YELLOW
+            + "Do not worry if the program complains about detached signatures"
             " or MD5."
+            + END
         )
     print("You can now post the file " + file_message + ".sig using rnews")
     print("or a similar tool.")
@@ -612,17 +625,19 @@ These new settings (status and description) will override the current ones.
     if moderated is None:
         if str_input("Is " + group + " a moderated newsgroup? (y/n) ") == "y":
             moderated = True
-            print("""
+            print(YELLOW + """
 There is no need to add " (Moderated)" at the very end of the description.
-It will be automatically added, if not already present.
-""")
+It will be automatically added, if not already present.""" + END)
         else:
             moderated = False
 
     while not description:
         print("")
         print(
-            "The description should start with a capital and end in a period."
+            YELLOW
+            + "The description should start with a capital and end in a"
+            " period."
+            + END
         )
         description = str_input("Description of " + group + ": ")
         if len(description) > 56:
@@ -687,12 +702,16 @@ It will be automatically added, if not already present.
                 "$GROUP$", group
             )
 
-        print(message)
+        print(CYAN + message + END)
         print("")
         if str_input("Do you want to change it? (y/n) ") == "y":
             print("")
             print("Please enter the message you want to send.")
-            print('End it with a line containing only "." (a dot).')
+            print(
+                YELLOW
+                + 'End it with a line containing only "." (a dot).'
+                + END
+            )
             print("")
 
             message = ""
@@ -700,22 +719,22 @@ It will be automatically added, if not already present.
             while buffer != ".\n":
                 message += buffer.rstrip() + "\n"
                 buffer = str_input("Message: ") + "\n"
-            print("")
 
     print("")
     print("Here is the information about the newsgroup:")
-    print("Name: " + group)
+    print("")
+    print("Name: " + CYAN + group + END)
 
     if moderated:
-        print("Status: moderated")
+        print("Status: " + CYAN + "moderated" + END)
         if not description.endswith(" (Moderated)"):
             description += " (Moderated)"
     else:
-        print("Status: unmoderated")
-    print("Description: " + description)
+        print("Status: " + CYAN + "unmoderated" + END)
+    print("Description: " + CYAN + description + END)
     print("Message: ")
     print("")
-    print(message)
+    print(CYAN + message + END)
     print("")
 
     if (
@@ -804,7 +823,7 @@ def generate_rmgroup(
 
     if group not in groups:
         print("")
-        print("The newsgroup " + group + " does not exist.")
+        print(YELLOW + "The newsgroup " + group + " does *not* exist." + END)
         print("Yet, you can send an rmgroup message for it if you want.")
         print("")
 
@@ -824,12 +843,16 @@ def generate_rmgroup(
 
             message = config["RMGROUP_MESSAGE"].replace("$GROUP$", group)
 
-            print(message)
+            print(CYAN + message + END)
             print("")
             if str_input("Do you want to change it? (y/n) ") == "y":
                 print("")
                 print("Please enter the message you want to send.")
-                print('End it with a line containing only "." (a dot).')
+                print(
+                    YELLOW
+                    + 'End it with a line containing only "." (a dot).'
+                    + END
+                )
                 print("")
 
                 message = ""
@@ -960,13 +983,14 @@ def manage_keys(config):
                 + " --list-secret-keys --with-fingerprint"
             )
             print(
-                "Please note that the uid of your secret key and the value of"
-            )
-            print(
-                "the ID parameter set in signcontrol.conf should be the same."
+                YELLOW
+                + "Please note that the uid of your secret key and the value"
+                "\nof the ID parameter set in signcontrol.conf should"
+                " be the same."
+                + END
             )
         elif choice == 2:
-            print("""
+            print(YELLOW + """
 -----------------------------------------------------------------------
 Please put the e-mail address from which you will send control articles
 in the key ID (the real name field).  And leave the other fields blank,
@@ -979,18 +1003,18 @@ Please note that the key generation may not finish if it is launched
 on a remote server, owing to a lack of enough entropy.  Use your own
 computer instead and import the key on the remote one afterwards.
 -----------------------------------------------------------------------
-""")
+""" + END)
             # --gen-key should be used instead of --full-generate-key for
             # GnuPG versions prior to 2.1.17.
             os.system(
                 config["PROGRAM_GPG"]
                 + " --full-generate-key --allow-freeform-uid"
             )
-            print("""
+            print(YELLOW + """
 After having generated these keys, you should export your PUBLIC key
 and make it public (in the web site of your hierarchy, along with
 a current checkgroups, and also announce it in news.admin.hierarchies).
-You can also export your PRIVATE key for backup only.""")
+You can also export your PRIVATE key for backup only.""" + END)
         elif choice == 3:
             print("The key will be written to the file public-key.asc.")
             key_name = str_input(
@@ -1015,18 +1039,18 @@ You can also export your PRIVATE key for backup only.""")
             )
             if os.path.isfile("private-key.asc"):
                 os.chmod("private-key.asc", 0o400)
-                print("""
+                print(YELLOW + """
 Be careful: it is a security risk to export your private key.
-Please make sure that nobody has access to it.""")
+Please make sure that nobody has access to it.""" + END)
         elif choice == 5:
             str_input(
                 "Please put it in a file named secret-key.asc and press enter."
             )
             os.system(config["PROGRAM_GPG"] + " --import secret-key.asc")
-            print("""
+            print(YELLOW + """
 Make sure that both the secret and public keys have properly been imported.
 Their uid should be put as the value of the ID parameter set in
-signcontrol.conf.""")
+signcontrol.conf.""" + END)
         elif choice == 6:
             key_name = str_input(
                 "Please enter the uid of the key to *remove*: "
@@ -1056,7 +1080,7 @@ if __name__ == "__main__":
             " script to put"
         )
         print("the path to the gpg binary.")
-        str_input("Please install it before using this script.")
+        str_input("Please install GnuPG before using this script.")
         sys.exit(2)
     choice = 0
     while choice != 5:
