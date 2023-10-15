@@ -160,6 +160,40 @@ charset that SHOULD be used for non-ASCII characters, per [Section 4.2
 of RFC 5537](https://datatracker.ietf.org/doc/html/rfc5537#section-4.2).
 Make sure your terminal is configured for UTF-8 input too!
 
+## Using As a Library
+
+You may also want to call the functions provided by **signcontrol.py** from
+your own Python scripts.  Here is an example for adding or removing a bunch of
+newsgroups, reading the list from a file (one newsgroup per line).  Naturally,
+the example should be adapted to fit your needs.
+
+```python
+
+#!/usr/bin/python3
+
+import signcontrol
+
+conf = signcontrol.read_configuration(signcontrol.CONFIGURATION_FILE)
+checkgroups = signcontrol.read_checkgroups(conf["CHECKGROUPS_FILE"])
+
+# If the file only provides newsgroup names, moderation statuses
+# and descriptions will be interactively asked for.
+for group in open("list-of-groups-to-add"):
+    signcontrol.generate_newgroup(checkgroups, conf, group.rstrip())
+
+# If the file also contains the moderation status and the description
+# of each newsgroup, they won't be interactively asked for.
+for group in open("list-of-groups-to-add"):
+    (name, status, descr) = group.split(' ', 2)
+    signcontrol.generate_newgroup(
+        checkgroups, conf, name, status, descr.rstrip()
+    )
+
+for group in open("list-of-groups-to-remove"):
+    signcontrol.generate_rmgroup(checkgroups, conf, group.rstrip())
+
+```
+
 ## Useful Resources
 
 Here are some resources that can be useful to be aware of:

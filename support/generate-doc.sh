@@ -18,6 +18,7 @@ This software is distributed under the MIT license.  Please see the\
             -e 's/# SUPPORT/## Support/' \
             -e 's/# SOURCE REPOSITORY/## Source Repository/' \
             -e 's/# CONFIGURATION FILE/## Configuration File/' \
+            -e 's/# USING AS A LIBRARY/## Using As a Library/' \
             -e 's/# USEFUL RESOURCES/## Useful Resources/' \
             -e 's/# LICENSE/## License/' \
             -e 's/    //' \
