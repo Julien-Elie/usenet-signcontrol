@@ -1308,11 +1308,17 @@ Here are some resources that can be useful to be aware of:
 in the C<news.admin.hierarchies> newsgroup; do not hesitate to participate in
 this newsgroup!
 
+Z<>
+
 =item Usenet Hierarchy Administration FAQ:
 L<https://www.eyrie.org/~eagle/faqs/usenet-hier.html>
 
+Z<>
+
 =item Usenet hierarchy information:
 L<http://usenet.trigofacile.com/hierarchies/>
+
+Z<>
 
 =item Hosting service for hierarchy administrators:
 L<http://www.news-admin.org/>
@@ -1320,6 +1326,9 @@ L<http://www.news-admin.org/>
 =back
 
 =head1 LICENSE
+
+For any copyright range specified by files in this package as "YYYY-ZZZZ", the
+range specifies every single year in that closed interval.
 
 The B<usenet-signcontrol> package as a whole is covered by the following
 copyright statement and license:
@@ -1343,11 +1352,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-
-
-For any copyright range specified by files in this package as "YYYY-ZZZZ", the
-range specifies every single year in that closed interval.
 
 =head1 HISTORY
 

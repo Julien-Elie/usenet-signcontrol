@@ -201,14 +201,26 @@ Here are some resources that can be useful to be aware of:
 - Discussions about Usenet hierarchy administration in general take place
 in the `news.admin.hierarchies` newsgroup; do not hesitate to participate in
 this newsgroup!
+
+
+
 - Usenet Hierarchy Administration FAQ:
 [https://www.eyrie.org/~eagle/faqs/usenet-hier.html](https://www.eyrie.org/~eagle/faqs/usenet-hier.html)
+
+
+
 - Usenet hierarchy information:
 [http://usenet.trigofacile.com/hierarchies/](http://usenet.trigofacile.com/hierarchies/)
+
+
+
 - Hosting service for hierarchy administrators:
 [http://www.news-admin.org/](http://www.news-admin.org/)
 
 ## License
+
+For any copyright range specified by files in this package as "YYYY-ZZZZ", the
+range specifies every single year in that closed interval.
 
 The **usenet-signcontrol** package as a whole is covered by the following
 copyright statement and license:
@@ -232,6 +244,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-For any copyright range specified by files in this package as "YYYY-ZZZZ", the
-range specifies every single year in that closed interval.
