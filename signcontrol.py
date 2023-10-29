@@ -4,7 +4,7 @@
 # Script to help in managing Usenet hierarchies.  It generates control articles
 # and handles PGP keys (generation and management).
 #
-# signcontrol.py -- v. 1.4.0 -- 2014/10/26
+# signcontrol.py -- v. 1.5.0 -- 2023/10/29
 #
 # Original version written in 2007, and maintained since then by Julien ÉLIE.
 #
@@ -25,6 +25,31 @@
 #
 #
 # History:
+#
+# v. 1.5.0: 2023/10/29
+#           - Add compatibility with both Python 2 and Python 3.
+#           - Default encoding for generated control articles is now UTF-8
+#             in the configuration file (this charset SHOULD be used for
+#             non-ASCII characters, per Section 4.2 of RFC 5537).  If you are
+#             upgrading from a previous version of signcontrol.py, and your
+#             checkgroups file contains descriptions with non-ASCII characters,
+#             you are encouraged to also switch to "UTF-8" as the value of the
+#             ENCODING parameter, use UTF-8 input in your terminal, and convert
+#             your checkgroups file to this charset.
+#           - Use --full-generate-key instead of --gen-key when generating a
+#             new pair of keys as GnuPG versions greater than 2.1.17 otherwise
+#             unconditionally set an expiration date.
+#           - Recommend at least a 3072-bit RSA key (and not a 2048-bit one).
+#           - Fix the feature of key revocation.
+#           - Colourize errors and recommendations in the terminal output to
+#             better view them.
+#           - Add the URL to the ftp.isc.org's README.html file in the X-Info
+#             header field only if not already present (it was previously
+#             unconditionally added).
+#           - Switch ftp.isc.org's URLs from ftp to https in the X-Info header
+#             field.
+#           - Improve documentation, with more details and return of
+#             experience accumulated since the last release.
 #
 # v. 1.4.0: 2014/10/26
 #           - Add the --no-tty flag to gpg when --passphrase is also used.
