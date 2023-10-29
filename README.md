@@ -187,17 +187,22 @@ for group in open("list-of-groups-to-add"):
     signcontrol.generate_newgroup(checkgroups, conf, group.rstrip())
 
 # If the file also contains the moderation status and the description
-# of each newsgroup, they won't be interactively asked for.
+# of each newsgroup, these data will directly be used.
 for group in open("list-of-groups-to-add"):
     (name, status, descr) = group.split(' ', 2)
     signcontrol.generate_newgroup(
         checkgroups, conf, name, status, descr.rstrip()
     )
 
+# An example of mass removal.
 for group in open("list-of-groups-to-remove"):
     signcontrol.generate_rmgroup(checkgroups, conf, group.rstrip())
 
 ```
+
+An optional sixth argument to `generate_newgroup` and an optional fourth
+argument to `generate_rmgroup` can be used to specify a different message
+than the default one for the body of generated control articles.
 
 ## Useful Resources
 
