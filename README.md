@@ -40,6 +40,11 @@ For optimal results, in case you'll use non-ASCII characters in control
 messages and descriptions, please use UTF-8 for the encoding of your terminal
 input and the checkgroups file.
 
+If you run your own news server, you can send the generated control articles
+through it (with INN, the command `inews -P -h < article.sig` can for
+instance be used).  Otherwise, you'll have to find a news server and negotiate
+with his newsmaster how you can inject your control articles.
+
 ## Support
 
 To report an issue or ask a question, please use the [issue tracker on
