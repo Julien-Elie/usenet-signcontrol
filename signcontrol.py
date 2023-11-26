@@ -1196,7 +1196,7 @@ with his newsmaster how you can inject your control articles.
 =head1 SUPPORT
 
 To report an issue or ask a question, please use the L<issue tracker on
-GitHub|https://github.com/Julien-Elie/usenet-signcontrol>.
+GitHub|https://github.com/Julien-Elie/usenet-signcontrol/issues>.
 
 Instructions written in French are also available at
 L<https://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm>.

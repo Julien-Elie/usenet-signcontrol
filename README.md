@@ -48,7 +48,7 @@ with his newsmaster how you can inject your control articles.
 ## Support
 
 To report an issue or ask a question, please use the [issue tracker on
-GitHub](https://github.com/Julien-Elie/usenet-signcontrol).
+GitHub](https://github.com/Julien-Elie/usenet-signcontrol/issues).
 
 Instructions written in French are also available at
 [https://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm](https://www.trigofacile.com/divers/usenet/clefs/signcontrol.htm).
