@@ -340,7 +340,8 @@ def choice_menu():
     Return value: the number representing the user's choice
     """
     while True:
-        print("""
+        print(
+            """
 What do you want to do?
 -----------------------
 1. Generate a newgroup control article (create or change a newsgroup)
@@ -348,7 +349,8 @@ What do you want to do?
 3. Generate a checkgroups control article (list of newsgroups)
 4. Manage my PGP keys (generate/import/export/remove/revoke)
 5. Quit
-""")
+"""
+        )
         try:
             choice = int(str_input("Your choice (1-5): "))
             if int(choice) not in list(range(1, 6)):
@@ -365,7 +367,8 @@ def manage_menu():
     Return value: the number representing the user's choice
     """
     while True:
-        print("""
+        print(
+            """
 What do you want to do?
 -----------------------
 1. See the current installed keys
@@ -376,7 +379,8 @@ What do you want to do?
 6. Remove a pair of secret/public keys
 7. Revoke a secret key
 8. Quit
-""")
+"""
+        )
         try:
             choice = int(str_input("Your choice (1-8): "))
             if int(choice) not in list(range(1, 9)):
@@ -518,8 +522,7 @@ def generate_signed_message(
         print(
             YELLOW
             + "Do not worry if the program complains about detached signatures"
-            " or MD5."
-            + END
+            " or MD5." + END
         )
     print("You can now post the file " + file_message + ".sig using rnews")
     print("or a similar tool.")
@@ -642,27 +645,32 @@ def generate_newgroup(
                 )
 
     if group in groups:
-        print("""
+        print(
+            """
 The newsgroup %s already exists.
 These new settings (status and description) will override the current ones.
-""" % group)
+"""
+            % group
+        )
 
     if moderated is None:
         if str_input("Is " + group + " a moderated newsgroup? (y/n) ") == "y":
             moderated = True
-            print(YELLOW + """
+            print(
+                YELLOW
+                + """
 There is no need to add " (Moderated)" at the very end of the description.
-It will be automatically added, if not already present.""" + END)
+It will be automatically added, if not already present."""
+                + END
+            )
         else:
             moderated = False
 
     while not description:
         print("")
         print(
-            YELLOW
-            + "The description should start with a capital and end in a"
-            " period."
-            + END
+            YELLOW + "The description should start with a capital and end in a"
+            " period." + END
         )
         description = str_input("Description of " + group + ": ")
         if len(description) > 56:
@@ -1011,11 +1019,12 @@ def manage_keys(config):
                 YELLOW
                 + "Please note that the uid of your secret key and the value"
                 "\nof the ID parameter set in signcontrol.conf should"
-                " be the same."
-                + END
+                " be the same." + END
             )
         elif choice == 2:
-            print(YELLOW + """
+            print(
+                YELLOW
+                + """
 -----------------------------------------------------------------------
 Please put the e-mail address from which you will send control articles
 in the key ID (the real name field).  And leave the other fields blank,
@@ -1028,18 +1037,24 @@ Please note that the key generation may not finish if it is launched
 on a remote server, owing to a lack of enough entropy.  Use your own
 computer instead and import the key on the remote one afterwards.
 -----------------------------------------------------------------------
-""" + END)
+"""
+                + END
+            )
             # --gen-key should be used instead of --full-generate-key for
             # GnuPG versions prior to 2.1.17.
             os.system(
                 config["PROGRAM_GPG"]
                 + " --full-generate-key --allow-freeform-uid"
             )
-            print(YELLOW + """
+            print(
+                YELLOW
+                + """
 After having generated these keys, you should export your PUBLIC key
 and make it public (in the web site of your hierarchy, along with
 a current checkgroups, and also announce it in news.admin.hierarchies).
-You can also export your PRIVATE key for backup only.""" + END)
+You can also export your PRIVATE key for backup only."""
+                + END
+            )
         elif choice == 3:
             print("The key will be written to the file public-key.asc.")
             key_name = str_input(
@@ -1064,18 +1079,26 @@ You can also export your PRIVATE key for backup only.""" + END)
             )
             if os.path.isfile("private-key.asc"):
                 os.chmod("private-key.asc", 0o400)
-                print(YELLOW + """
+                print(
+                    YELLOW
+                    + """
 Be careful: it is a security risk to export your private key.
-Please make sure that nobody has access to it.""" + END)
+Please make sure that nobody has access to it."""
+                    + END
+                )
         elif choice == 5:
             str_input(
                 "Please put it in a file named secret-key.asc and press enter."
             )
             os.system(config["PROGRAM_GPG"] + " --import secret-key.asc")
-            print(YELLOW + """
+            print(
+                YELLOW
+                + """
 Make sure that both the secret and public keys have properly been imported.
 Their uid should be put as the value of the ID parameter set in
-signcontrol.conf.""" + END)
+signcontrol.conf."""
+                + END
+            )
         elif choice == 6:
             key_name = str_input(
                 "Please enter the uid of the key to *remove*: "
