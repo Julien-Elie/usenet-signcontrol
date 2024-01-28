@@ -1124,7 +1124,7 @@ if __name__ == "__main__":
 
 
 # Embedded documentation.
-POD = """
+POD = r"""
 =encoding utf8
 
 =head1 NAME
