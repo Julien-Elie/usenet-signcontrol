@@ -9,7 +9,7 @@
         | sed -e 's/# NAME/# usenet-signcontrol/' \
             -e '2 i \
 \
-> Copyright (c) 2007-2009, 2011, 2014, 2023 Julien ÉLIE\
+> Copyright (c) 2007-2009, 2011, 2014, 2023, 2024 Julien ÉLIE\
 \
 This software is distributed under the MIT license.  Please see the\
 [License](#license) section below for more information.' \

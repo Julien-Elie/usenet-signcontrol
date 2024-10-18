@@ -1,6 +1,6 @@
 # usenet-signcontrol
 
-> Copyright (c) 2007-2009, 2011, 2014, 2023 Julien ÉLIE
+> Copyright (c) 2007-2009, 2011, 2014, 2023, 2024 Julien ÉLIE
 
 This software is distributed under the MIT license.  Please see the
 [License](#license) section below for more information.
@@ -261,7 +261,7 @@ range specifies every single year in that closed interval.
 The **usenet-signcontrol** package as a whole is covered by the following
 copyright statement and license:
 
-> Copyright (c) 2007-2009, 2011, 2014, 2023 Julien ÉLIE
+> Copyright (c) 2007-2009, 2011, 2014, 2023, 2024 Julien ÉLIE
 >
 > Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

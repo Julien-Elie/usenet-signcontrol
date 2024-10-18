@@ -6,7 +6,9 @@
 #
 # signcontrol.py -- v. 1.5.0 -- 2023/10/29
 #
-# Original version written in 2007, and maintained since then by Julien ÉLIE.
+# Original version written in 2007, and maintained since then by Julien ÉLIE
+# in 2008, 2009, 2011, 2014, 2023, 2024.
+#
 #
 # Github repository to view the latest source code and report possible issues:
 #   https://github.com/Julien-Elie/usenet-signcontrol/
@@ -1443,7 +1445,7 @@ range specifies every single year in that closed interval.
 The B<usenet-signcontrol> package as a whole is covered by the following
 copyright statement and license:
 
-Copyright (c) 2007-2009, 2011, 2014, 2023 Julien ÉLIE
+Copyright (c) 2007-2009, 2011, 2014, 2023, 2024 Julien ÉLIE
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
