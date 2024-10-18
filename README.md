@@ -34,7 +34,33 @@ once.  Running `gpg-agent --daemon signcontrol.py` should work.
 
 If you're running **signcontrol.py** through a remote terminal, you may have
 to execute `chown user $(tty)` as _root_ before running **signcontrol.py**
-as _user_ to allow the input of a passphrase.  (**gpg** will otherwise fail.)
+as _user_ to allow the input of a passphrase.  (**gpg** will otherwise fail
+because the passphrase cannot be typed.)
+
+Alternately, instead of the above `chown` command, you can enable loopback
+pinentry mode with the following instructions added to `~/.gnupg/gpg.conf`
+of the user running this script, creating the configuration file if it doesn't
+already exist:
+
+```
+
+use-agent
+pinentry-mode loopback
+
+```
+
+And also the following instructions added to `~/.gnupg/gpg-agent.conf`,
+creating the file if it doesn't already exist:
+
+```
+
+allow-loopback-pinentry
+
+```
+
+Then restart the GnuPG agent with `echo RELOADAGENT | gpg-connect-agent`
+and you will be able to interactively type your passphrase or provide it when
+running from cron.
 
 For optimal results, in case you'll use non-ASCII characters in control
 messages and descriptions, please use UTF-8 for the encoding of your terminal

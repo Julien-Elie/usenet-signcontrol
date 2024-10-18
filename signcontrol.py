@@ -1197,13 +1197,41 @@ your installation.
 
 Running C<python signcontrol.py>.
 
+=back
+
 If you intend to generate several control articles during a single run of this
 script, you can make use of B<gpg-agent> so as to type your passphrase only
 once.  Running C<gpg-agent --daemon signcontrol.py> should work.
 
 If you're running B<signcontrol.py> through a remote terminal, you may have
 to execute C<chown user $(tty)> as I<root> before running B<signcontrol.py>
-as I<user> to allow the input of a passphrase.  (B<gpg> will otherwise fail.)
+as I<user> to allow the input of a passphrase.  (B<gpg> will otherwise fail
+because the passphrase cannot be typed.)
+
+Alternately, instead of the above C<chown> command, you can enable loopback
+pinentry mode with the following instructions added to F<~/.gnupg/gpg.conf>
+of the user running this script, creating the configuration file if it doesn't
+already exist:
+
+=for markdown ```
+
+    use-agent
+    pinentry-mode loopback
+
+=for markdown ```
+
+And also the following instructions added to F<~/.gnupg/gpg-agent.conf>,
+creating the file if it doesn't already exist:
+
+=for markdown ```
+
+    allow-loopback-pinentry
+
+=for markdown ```
+
+Then restart the GnuPG agent with C<echo RELOADAGENT | gpg-connect-agent>
+and you will be able to interactively type your passphrase or provide it when
+running from cron.
 
 For optimal results, in case you'll use non-ASCII characters in control
 messages and descriptions, please use UTF-8 for the encoding of your terminal
@@ -1213,8 +1241,6 @@ If you run your own news server, you can send the generated control articles
 through it (with INN, the command C<< inews -P -h < article.sig >> can for
 instance be used).  Otherwise, you'll have to find a news server and negotiate
 with his newsmaster how you can inject your control articles.
-
-=back
 
 =head1 SUPPORT
 
