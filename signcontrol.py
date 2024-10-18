@@ -28,6 +28,13 @@
 #
 # History:
 #
+# v. 1.5.1: (not yet released)
+#           - Switch ftp.isc.org's URLs to downloads.isc.org, the preferred
+#             hostname now that their FTP server has shut down.
+#           - Improve documentation (how to enable loopback pinentry mode to
+#             type the passphrase in a terminal, how to run inews, mention
+#             all the optional parameters).
+#
 # v. 1.5.0: 2023/10/29
 #           - Add compatibility with both Python 2 and Python 3.
 #           - Default encoding for generated control articles is now UTF-8
@@ -1021,9 +1028,9 @@ def manage_keys(config):
             )
             print(
                 YELLOW
-                + "Please note that the uid of your secret key and the value"
-                "\nof the ID parameter set in signcontrol.conf should"
-                " be the same." + END
+                + "Please note that the uid of your secret key and the value\n"
+                "of the ID parameter in signcontrol.conf should be the same."
+                + END
             )
         elif choice == 2:
             print(
