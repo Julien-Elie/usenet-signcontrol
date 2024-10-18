@@ -160,10 +160,10 @@ or `de.alt` (for de.alt.\*).
 
 - **URL**
 
-The URL where the public PGP key can be found.  If you do not have any, leave
-`https://ftp.isc.org/pub/pgpcontrol/README.html`.  If you want to mention
-several URLs (like the home page of the hierarchy), use a multi-line text
-where each line, except for the first, begins with a tabulation.
+The URL where the public PGP key can be found.  If you do not have any,
+leave `https://downloads.isc.org/pub/pgpcontrol/README.html`.  If you want to
+mention several URLs (like the home page of the hierarchy), use a multi-line
+text where each line, except for the first, begins with a tabulation.
 
 - **NEWGROUP\_MESSAGE\_MODERATED**, **NEWGROUP\_MESSAGE\_UNMODERATED**,
 **RMGROUP\_MESSAGE**
